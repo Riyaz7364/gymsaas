@@ -75,7 +75,7 @@ class MemberController extends Controller
             'occupation'              => 'nullable|string|max:255',
             'joined_at'               => 'nullable|date',
             'notes'                   => 'nullable|string',
-            'whatsapp_optin'          => 'boolean',
+            'whatsapp_optin'          => 'boolean|nullable',
             'avatar'                  => 'nullable|image|max:2048',
             // plan assignment
             'plan_id'                 => 'nullable|exists:plans,id',

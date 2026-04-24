@@ -7,7 +7,7 @@
     <form method="POST" action="{{ route('members.store') }}" enctype="multipart/form-data">
         @csrf
 
-        <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start;">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 items-start">
 
             {{-- Left: main fields --}}
             <div style="display:flex; flex-direction:column; gap:20px;">
@@ -65,7 +65,7 @@
                             </div>
 
                             <div class="gh-form-group" style="margin:0;">
-                                <label class="gh-label" for="occupation">Occupation</label>
+                                <label class="gh-label" for="occupation">Occupation (Optional)</label>
                                 <input type="text" id="occupation" name="occupation" class="gh-input"
                                        value="{{ old('occupation') }}" placeholder="Software Engineer">
                             </div>
@@ -122,17 +122,7 @@
                                     <option value="endurance"   {{ old('goal') === 'endurance'   ? 'selected' : '' }}>Endurance</option>
                                 </select>
                             </div>
-                            <div class="gh-form-group" style="margin:0;">
-                                <label class="gh-label" for="trainer_id">Assign Trainer</label>
-                                <select id="trainer_id" name="trainer_id" class="gh-input">
-                                    <option value="">No Trainer Assigned</option>
-                                    @foreach($trainers as $trainer)
-                                    <option value="{{ $trainer->id }}" {{ old('trainer_id') == $trainer->id ? 'selected' : '' }}>
-                                        {{ $trainer->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
+
                         </div>
                         <div class="gh-form-group" style="margin-top:16px; margin-bottom:0;">
                             <label class="gh-label" for="notes">Notes</label>
@@ -186,7 +176,7 @@
                                 <img :src="preview ?? 'https://ui-avatars.com/api/?name=Member&color=fff&background=0abf8e&size=96'"
                                      style="width:100%; height:100%; object-fit:cover;" alt="Preview">
                             </div>
-                            <label for="avatar" class="gh-btn gh-btn-outline" style="cursor:pointer; display:inline-block;">
+                            <label for="avatar" class="gh-btn gh-btn-outline" style="cursor:pointer; display:inline-flex;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
                                 Upload Photo
                             </label>
@@ -197,7 +187,8 @@
                     </div>
                 </div>
 
-                {{-- WhatsApp --}}
+                {{-- WhatsApp API If has module --}}
+                @if(auth()->user()->gymHasModule('whatsapp_ai'))
                 <div class="gh-card">
                     <div class="gh-card-header">
                         <h3 class="gh-card-title">WhatsApp AI</h3>
@@ -216,7 +207,7 @@
                         </label>
                     </div>
                 </div>
-
+                @endif
                 {{-- Actions --}}
                 <div class="gh-card">
                     <div class="gh-card-body">

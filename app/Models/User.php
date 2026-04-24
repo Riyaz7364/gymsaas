@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Support\GymModuleRegistry;
+use Illuminate\Support\Collection;
+
 
 class User extends Authenticatable
 {
@@ -44,6 +48,11 @@ class User extends Authenticatable
     public function gym()
     {
         return $this->belongsTo(Gym::class);
+    }
+
+    public function ownedGyms(): HasMany
+    {
+        return $this->hasMany(Gym::class, 'owner_id');
     }
 
     public function loginHistories()
@@ -87,10 +96,27 @@ class User extends Authenticatable
      */
     public function gymHasModule(string $module): bool
     {
-        if ($this->isSuperAdmin()) {
-            return true;
-        }
-        $gym = $this->gym;
-        return $gym ? $gym->hasModule($module) : false;
+        return GymModuleRegistry::userHasModule($this, $module);
+    }
+
+    public function gymModules(): Collection
+    {
+        return GymModuleRegistry::getModulesForUser($this);
+    }
+
+    public function membersTabs(): Array {
+        $tabs = [
+            'plan'       => ['label' => 'Membership', 'icon' => '🎫', 'enabled' => true],
+            'attendance' => ['label' => 'Attendance',  'icon' => '📅', 'enabled' => true],
+            'diet'       => ['label' => 'Diet Plan',   'icon' => '🥗', 'enabled' => $this->gymHasModule('diet_management')],
+            'trainer'    => ['label' => 'Trainer',     'icon' => '🏋️', 'enabled' => $this->gymHasModule('trainer_management')],
+            'workout'    => ['label' => 'Workout Plan','icon' => '💪', 'enabled' => $this->gymHasModule('workout_management')],
+            'messages'   => ['label' => 'AI Messages', 'icon' => '🤖', 'enabled' => true],
+            'health'     => ['label' => 'Body Stats',  'icon' => '📊', 'enabled' => $this->gymHasModule('body_progress')],
+            'notes'      => ['label' => 'Notes',       'icon' => '📝', 'enabled' => true],
+        ];
+        return array_filter($tabs, function($tab) {
+            return $tab['enabled'];
+        });
     }
 }

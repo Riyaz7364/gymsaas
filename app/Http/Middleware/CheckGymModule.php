@@ -31,8 +31,7 @@ class CheckGymModule
         }
 
         if (!$user->gymHasModule($module)) {
-            $moduleLabel = \App\Models\Module::where('key', $module)->value('label')
-                ?? ucfirst(str_replace('_', ' ', $module));
+            $moduleLabel = \App\Support\GymModuleRegistry::label($module);
 
             if ($request->expectsJson()) {
                 return response()->json([

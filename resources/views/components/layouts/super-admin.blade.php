@@ -63,11 +63,8 @@
             Pricing Plans
         </a>
 
-        {{-- Future: All Subscriptions list page --}}
-        <a href="{{ route('super-admin.gyms.index') }}"
-           style="display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.65);text-decoration:none;background:transparent;border-left:3px solid transparent;transition:all .15s;"
-           onmouseover="this.style.color='#fff';this.style.background='rgba(255,255,255,.05)'"
-           onmouseout="this.style.color='rgba(255,255,255,.65)';this.style.background='transparent'">
+        <a href="{{ route('super-admin.subscriptions.index') }}"
+           style="display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13.5px;font-weight:500;color:{{ request()->routeIs('super-admin.subscriptions.*') ? '#fff' : 'rgba(255,255,255,.65)' }};text-decoration:none;background:{{ request()->routeIs('super-admin.subscriptions.*') ? 'rgba(10,191,142,.15)' : 'transparent' }};border-left:3px solid {{ request()->routeIs('super-admin.subscriptions.*') ? '#0abf8e' : 'transparent' }};transition:all .15s;">
             <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
             Manage Subscriptions
         </a>

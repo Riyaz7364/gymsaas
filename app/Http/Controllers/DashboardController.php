@@ -20,6 +20,9 @@ class DashboardController extends Controller
             return redirect()->route('super-admin.dashboard');
         }
 
+        $userModules = auth()->user()->gymModules();
+        // dd($userModules);
+
         $gymId = auth()->user()->gym_id;
 
         // Current month revenue

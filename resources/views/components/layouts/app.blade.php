@@ -37,6 +37,12 @@
             Dashboard
         </a>
 
+        <a href="{{ route('modules.index') }}"
+           class="gh-nav-item {{ request()->routeIs('modules.index') ? 'active' : '' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 12 12.75l5.571-3M6.429 9.75 12 6.75l5.571 3M6.429 9.75v4.5L12 17.25m5.571-7.5v4.5L12 17.25m0 0v4.5" /></svg>
+            Modules
+        </a>
+
         @unless(auth()->user()->isTrainer())
         <div x-data="{ open: {{ request()->routeIs('users.*', 'roles.*', 'login-history.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
@@ -56,25 +62,31 @@
         {{-- Business Management --}}
         <div class="gh-nav-group-label">Business Management</div>
 
+        @module('trainers_management')
         <a href="{{ route('trainers.index') }}"
            class="gh-nav-item {{ request()->routeIs('trainers.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             Trainers
         </a>
+        @endmodule
 
+        @module('members_management')
         <a href="{{ route('members.index') }}"
            class="gh-nav-item {{ request()->routeIs('members.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
             Members
         </a>
+        @endmodule
 
-
+        @module('membership_management')
         <a href="{{ route('plans.index') }}"
            class="gh-nav-item {{ request()->routeIs('plans.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
             Membership
         </a>
+        @endmodule
 
+        @module('workout_management')
         <div x-data="{ open: {{ request()->routeIs('workout-sequences.*', 'workout-activities.*', 'workout-categories.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
                class="gh-nav-item {{ request()->routeIs('workout*') ? 'active' : '' }}">
@@ -88,7 +100,9 @@
                 <a href="{{ route('workout-categories.index') }}"  class="gh-nav-item {{ request()->routeIs('workout-categories.*') ? 'active' : '' }}">Categories</a>
             </div>
         </div>
+        @endmodule
 
+        @module('diet_management')
         <div x-data="{ open: {{ request()->routeIs('diet-plans.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
                class="gh-nav-item {{ request()->routeIs('diet-plans.*') ? 'active' : '' }}">
@@ -101,13 +115,17 @@
                 <a href="{{ route('diet-plans.index') }}?type=custom"  class="gh-nav-item">Custom Plans</a>
             </div>
         </div>
+        @endmodule
 
+        @module('attendance_management')
         <a href="{{ route('attendance.index') }}"
            class="gh-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             Attendance
         </a>
+        @endmodule
 
+        @module('finance_management')
         <div x-data="{ open: {{ request()->routeIs('finance.*', 'invoices.*', 'expenses.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
                class="gh-nav-item {{ request()->routeIs('finance.*', 'invoices.*', 'expenses.*') ? 'active' : '' }}">
@@ -121,21 +139,26 @@
                 <a href="{{ route('expenses.index') }}"   class="gh-nav-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">Expenses</a>
             </div>
         </div>
+        @endmodule
 
+        @module('locker_management')
         <a href="{{ route('lockers.index') }}"
            class="gh-nav-item {{ request()->routeIs('lockers.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
             Locker
         </a>
+        @endmodule
 
         {{-- More --}}
         <div class="gh-nav-group-label">More</div>
 
+        @module('event_management')
         <a href="{{ route('events.index') }}"
            class="gh-nav-item {{ request()->routeIs('events.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" /></svg>
             Event
         </a>
+        @endmodule
 
         @module('whatsapp_updates')
         <div x-data="{ open: {{ request()->routeIs('whatsapp.*') ? 'true' : 'false' }} }">
@@ -152,6 +175,7 @@
         </div>
         @endmodule
 
+        @module('advanced_reports')
         <div x-data="{ open: {{ request()->routeIs('reports.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
                class="gh-nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
@@ -165,18 +189,23 @@
                 <a href="{{ route('reports.trainers') }}" class="gh-nav-item">Trainers</a>
             </div>
         </div>
+        @endmodule
 
+        @module('notice_board')
         <a href="{{ route('notices.index') }}"
            class="gh-nav-item {{ request()->routeIs('notices.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
             Notice Board
         </a>
+        @endmodule
 
+        @module('contact_diary')
         <a href="{{ route('contact-diary.index') }}"
            class="gh-nav-item {{ request()->routeIs('contact-diary.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
             Contact Diary
         </a>
+        @endmodule
 
         {{-- System Configuration --}}
         <!-- <div class="gh-nav-group-label">System Configuration</div>
@@ -326,15 +355,20 @@
     </div>
 </main>
 
-{{-- Footer --}}
-<footer style="margin-left: var(--gh-sidebar-w); padding: 16px 24px; border-top: 1px solid var(--gh-border); font-size: 13px; color: var(--gh-muted); display: flex; justify-content: space-between; background: #fff;">
-    <span>Copyright {{ date('Y') }} &copy; <a href="#" style="color: var(--gh-primary); text-decoration: none;">GymHub SaaS</a> All rights reserved.</span>
+<footer class="lg:ml-[var(--gh-sidebar-w)] px-6 py-4 border-t text-sm text-gray-500 flex flex-col gap-2 md:flex-row md:justify-between bg-white text-xs">
+    
     <span>
-        <a href="#" style="color: var(--gh-muted); text-decoration: none; margin-right: 16px;">Privacy Policy</a>
-        <a href="#" style="color: var(--gh-muted); text-decoration: none;">Terms &amp; Conditions</a>
+        Copyright {{ date('Y') }} &copy;
+        <a href="#" class="text-primary no-underline">GymHub SaaS</a>
+        All rights reserved.
     </span>
-</footer>
 
+    <span class="flex gap-4">
+        <a href="#" class="text-gray-500 no-underline">Privacy Policy</a>
+        <a href="#" class="text-gray-500 no-underline">Terms &amp; Conditions</a>
+    </span>
+
+</footer>
 @livewireScripts
 @stack('scripts')
 </body>

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Gym;
 use App\Models\GymSubscription;
+use App\Models\Module;
 use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -75,7 +76,13 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($plans as $planData) {
-            SubscriptionPlan::firstOrCreate(['name' => $planData['name']], $planData);
+            $plan = SubscriptionPlan::firstOrCreate(['name' => $planData['name']], $planData);
+            $defaultModuleKeys = config('gym-modules.plan_defaults.' . $planData['name'], []);
+
+            if ($defaultModuleKeys !== []) {
+                $moduleIds = Module::whereIn('key', $defaultModuleKeys)->pluck('id')->all();
+                $plan->modules()->syncWithoutDetaching($moduleIds);
+            }
         }
 
         // ── Demo Gym ───────────────────────────────────────────────────
@@ -123,5 +130,4 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
-
 

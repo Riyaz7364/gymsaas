@@ -140,19 +140,8 @@
 
             {{-- Tab nav --}}
             <div style="display:flex; gap:2px; margin-bottom:16px; border-bottom:2px solid var(--gh-border); padding-bottom:0; flex-wrap:wrap;">
-                @php
-                    $tabs = [
-                        'plan'       => ['label' => 'Membership', 'icon' => '🎫'],
-                        'attendance' => ['label' => 'Attendance',  'icon' => '📅'],
-                        'diet'       => ['label' => 'Diet Plan',   'icon' => '🥗'],
-                        'trainer'    => ['label' => 'Trainer',     'icon' => '🏋️'],
-                        'workout'    => ['label' => 'Workout Plan','icon' => '💪'],
-                        'messages'   => ['label' => 'AI Messages', 'icon' => '🤖'],
-                        'health'     => ['label' => 'Body Stats',  'icon' => '📊'],
-                        'notes'      => ['label' => 'Notes',       'icon' => '📝'],
-                    ];
-                @endphp
-                @foreach($tabs as $key => $info)
+           
+                @foreach(auth()->user()->membersTabs() as $key => $info)
                 <button @click="tab = '{{ $key }}'"
                         :style="tab === '{{ $key }}' ? 'border-bottom:2px solid var(--gh-primary); color:var(--gh-primary); margin-bottom:-2px;' : ''"
                         class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-1">
@@ -367,7 +356,7 @@
                     $sequence = $wp->sequence;
                 }
                 
-                $totalSteps = $wp ? $wp->total_steps : 5;
+                $totalSteps = ($wp && $wp->total_steps > 0) ? $wp->total_steps : 1;
                 $currentStep = $wp ? $wp->current_step : 1;
                 $currentWorkout = $wp ? $wp->currentWorkout() : null;
                 $nextStep = ($currentStep % $totalSteps) + 1;
@@ -382,7 +371,14 @@
                 }
             @endphp
 
-            @if($currentWorkout)
+            @if($sequence && (!isset($sequence->total_days) || $sequence->total_days == 0 || $sequence->days()->count() == 0))
+            <div class="gh-card" style="text-align:center; padding:40px 20px; border:2px dashed #fca5a5;">
+                <div style="font-size:36px; margin-bottom:12px;">⚠️</div>
+                <p style="color:#ef4444; font-weight:bold; margin-bottom:8px;">Empty Workout Sequence</p>
+                <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">The assigned sequence "<strong>{{ $sequence->name }}</strong>" has no days or exercises configured.</p>
+                <a href="{{ route('workout-sequences.index') }}" class="gh-btn gh-btn-outline">Manage Sequences</a>
+            </div>
+            @elseif($currentWorkout)
             {{-- Current day card --}}
             <div class="gh-card" style="margin-bottom:16px; border:2px solid {{ $currentWorkout->border }};">
                 <div class="gh-card-header" style="background:{{ $currentWorkout->bg }};">
@@ -483,7 +479,7 @@
                     <span class="gh-badge" style="background:#f3f4f6; color:#6b7280;">{{ $sequence->name }}</span>
                 </div>
                 <div class="gh-card-body" style="padding:0;">
-                    @foreach($sequence->days() as $day)
+                    @forelse($sequence->days() as $day)
                     <div style="display:flex; align-items:center; gap:14px; padding:12px 18px; border-bottom:{{ !$loop->last ? '1px solid var(--gh-border)' : 'none' }}; background:{{ $day->day_number == $currentStep ? $day->bg : 'transparent' }};">
                         <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
                                     display:flex; align-items:center; justify-content:center; font-size:16px;
@@ -499,7 +495,9 @@
                         </div>
                         <div style="font-size:12px; color:#9ca3af;">{{ $day->exercises->count() }} exercises</div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div style="padding: 24px; text-align: center; color: #9ca3af; font-size: 13px;">No days have been configured for this cycle.</div>
+                    @endforelse
                 </div>
             </div>
             @endif
@@ -597,4 +595,3 @@
         </div>{{-- /tabs --}}
     </div>
 </x-layouts.app>
-
