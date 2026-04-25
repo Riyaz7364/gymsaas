@@ -43,15 +43,20 @@
             <div class="gh-card">
                 <div class="gh-card-header">
                     <h3 class="gh-card-title">Attendance Log</h3>
-                    {{-- Date filter --}}
-                    <form method="GET" style="display:flex; gap:8px; align-items:center;">
-                        <input type="date" name="date" value="{{ $date }}" class="gh-input" style="width:auto; padding:6px 10px;">
-                        <button type="submit" class="gh-btn gh-btn-outline gh-btn-sm">Filter</button>
-                        @if($date !== today()->toDateString())
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <a href="{{ route('attendance.generate-qr') }}" class="gh-btn gh-btn-primary gh-btn-sm">
+                            <i class="fas fa-qrcode"></i> Generate Daily QR
+                        </a>
+                        {{-- Date filter --}}
+                        <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                            <input type="date" name="date" value="{{ $date }}" class="gh-input" style="width:auto; padding:6px 10px;">
+                            <button type="submit" class="gh-btn gh-btn-outline gh-btn-sm">Filter</button>
+                            @if($date !== today()->toDateString())
                         <a href="{{ route('attendance.index') }}" class="gh-btn gh-btn-sm" style="background:#f3f4f6; color:#6b7280;">Today</a>
                         @endif
                     </form>
                 </div>
+            </div>
                 <div class="gh-card-body" style="padding:0;">
                     <table class="gh-table">
                         <thead>

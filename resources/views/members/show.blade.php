@@ -121,6 +121,7 @@
             @endif
 
             {{-- WhatsApp AI opt-in --}}
+            @if(auth()->user()->gymHasModule('whatsapp_updates'))
             <div class="gh-card">
                 <div class="gh-card-body" style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:22px;">💬</span>
@@ -133,6 +134,7 @@
                     </span>
                 </div>
             </div>
+            @endif
         </div>
 
         {{-- RIGHT: Tabs --}}

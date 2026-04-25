@@ -128,6 +128,10 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // ── Food Categories and Items for Demo Gym ──────────────────────
+        $this->call(FoodCategorySeeder::class);
+        $this->call(FoodItemSeeder::class);
     }
 }
 

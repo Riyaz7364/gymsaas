@@ -6,6 +6,9 @@ use App\Models\Member;
 use App\Models\MemberPlan;
 use App\Models\Plan;
 use App\Models\DietPlan;
+use App\Models\WorkoutSequence;
+use App\Models\WorkoutPlan;
+use App\Models\WorkoutPlanItem;
 use App\Models\Trainer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -54,7 +57,8 @@ class MemberController extends Controller
         $gymId   = auth()->user()->gym_id;
         $plans   = Plan::where('gym_id', $gymId)->where('is_active', true)->get();
         $trainers = Trainer::where('gym_id', $gymId)->where('status', 'active')->get();
-        return view('members.create', compact('plans', 'trainers'));
+        $workoutPlans = WorkoutSequence::where('gym_id', $gymId)->where('is_active', true)->get();
+        return view('members.create', compact('plans', 'trainers', 'workoutPlans'));
     }
 
     public function store(Request $request)
@@ -64,6 +68,7 @@ class MemberController extends Controller
         $validated = $request->validate([
             'name'                    => 'required|string|max:255',
             'phone'                   => 'required|string|max:20',
+            'password'                => 'required|string|min:8',
             'email'                   => 'nullable|email|max:255',
             'gender'                  => 'nullable|in:male,female,other',
             'dob'                     => 'nullable|date',
@@ -77,6 +82,7 @@ class MemberController extends Controller
             'notes'                   => 'nullable|string',
             'whatsapp_optin'          => 'boolean|nullable',
             'avatar'                  => 'nullable|image|max:2048',
+            'workout_plan_id'         => 'nullable|exists:workout_sequences,id',
             // plan assignment
             'plan_id'                 => 'nullable|exists:plans,id',
             'plan_start_date'         => 'nullable|date',
@@ -99,6 +105,7 @@ class MemberController extends Controller
             'member_no'               => $memberNo,
             'name'                    => $validated['name'],
             'phone'                   => $validated['phone'],
+            'password'                => $validated['password'],
             'email'                   => $validated['email'] ?? null,
             'gender'                  => $validated['gender'] ?? null,
             'dob'                     => $validated['dob'] ?? null,
@@ -134,6 +141,11 @@ class MemberController extends Controller
         // Assign trainer if selected
         if (!empty($validated['trainer_id'])) {
             $member->trainer()->sync([$validated['trainer_id'] => ['assigned_at' => now(), 'gym_id' => $gymId]]);
+        }
+
+        // Assign workout plan if selected
+        if (!empty($validated['workout_plan_id'])) {
+            $this->assignWorkoutPlanToMember($member, $validated['workout_plan_id']);
         }
 
         return redirect()->route('members.show', $member)
@@ -180,7 +192,8 @@ class MemberController extends Controller
         $gymId   = auth()->user()->gym_id;
         $plans   = Plan::where('gym_id', $gymId)->where('is_active', true)->get();
         $trainers = Trainer::where('gym_id', $gymId)->where('status', 'active')->get();
-        return view('members.edit', compact('member', 'plans', 'trainers'));
+        $workoutPlans = WorkoutSequence::where('gym_id', $gymId)->where('is_active', true)->get();
+        return view('members.edit', compact('member', 'plans', 'trainers', 'workoutPlans'));
     }
 
     public function update(Request $request, Member $member)
@@ -204,6 +217,7 @@ class MemberController extends Controller
             'status'                  => 'required|in:active,inactive,frozen,expired',
             'whatsapp_optin'          => 'boolean',
             'avatar'                  => 'nullable|image|max:2048',
+            'workout_plan_id'         => 'nullable|exists:workout_sequences,id',
         ]);
 
         $avatarPath = $member->avatar;
@@ -213,6 +227,18 @@ class MemberController extends Controller
         }
 
         $member->update(array_merge($validated, ['avatar' => $avatarPath, 'whatsapp_optin' => $request->boolean('whatsapp_optin')]));
+
+        // Handle workout plan change
+        if (isset($validated['workout_plan_id']) && (!$member->workoutPlan || $member->workoutPlan->id != $validated['workout_plan_id'])) {
+            // Deactivate old plan if exists
+            if ($member->workoutPlan) {
+                $member->workoutPlan->update(['is_active' => false]);
+            }
+            // Assign new plan
+            if ($validated['workout_plan_id']) {
+                $this->assignWorkoutPlanToMember($member, $validated['workout_plan_id']);
+            }
+        }
 
         return redirect()->route('members.show', $member)
                          ->with('success', 'Member updated successfully.');
@@ -369,6 +395,43 @@ class MemberController extends Controller
     {
         if (!auth()->user()->isSuperAdmin() && $member->gym_id !== auth()->user()->gym_id) {
             abort(403);
+        }
+    }
+
+    private function assignWorkoutPlanToMember(Member $member, $sequenceId)
+    {
+        $sequence = WorkoutSequence::find($sequenceId);
+        if ($sequence && $sequence->gym_id == $member->gym_id) {
+            // Create a WorkoutPlan from the sequence
+            $plan = WorkoutPlan::create([
+                'gym_id' => $member->gym_id,
+                'member_id' => $member->id,
+                'name' => $sequence->name,
+                'description' => $sequence->description,
+                'is_default' => false,
+                'is_active' => true,
+            ]);
+
+            // Create items from sequence days and exercises
+            $dayNames = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            $dayIndex = 0;
+
+            foreach ($sequence->days as $sequenceDay) {
+                $dayName = $dayNames[$dayIndex % 7];
+                $sortOrder = 1;
+
+                foreach ($sequenceDay->exercises as $exercise) {
+                    \App\Models\WorkoutPlanItem::create([
+                        'plan_id' => $plan->id,
+                        'activity_id' => $exercise->activity_id,
+                        'day_of_week' => $dayName,
+                        'sort_order' => $sortOrder++,
+                    ]);
+                }
+
+                $dayIndex++;
+                if ($dayIndex >= $sequence->total_days) break; // Don't exceed sequence days
+            }
         }
     }
 }

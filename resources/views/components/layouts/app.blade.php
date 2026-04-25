@@ -43,7 +43,7 @@
             Modules
         </a>
 
-        @unless(auth()->user()->isTrainer())
+        {{-- @unless(auth()->user()->isTrainer())
         <div x-data="{ open: {{ request()->routeIs('users.*', 'roles.*', 'login-history.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
                class="gh-nav-item {{ request()->routeIs('users.*', 'roles.*') ? 'active' : '' }}">
@@ -57,7 +57,7 @@
                 <a href="#" class="gh-nav-item">Logged History</a>
             </div>
         </div>
-        @endunless
+        @endunless --}}
 
         {{-- Business Management --}}
         <div class="gh-nav-group-label">Business Management</div>
@@ -103,16 +103,17 @@
         @endmodule
 
         @module('diet_management')
-        <div x-data="{ open: {{ request()->routeIs('diet-plans.*') ? 'true' : 'false' }} }">
+        <div x-data="{ open: {{ request()->routeIs('diet-plans.*', 'food-items.*', 'food-categories.*') ? 'true' : 'false' }} }">
             <a href="#" @click.prevent="open = !open"
-               class="gh-nav-item {{ request()->routeIs('diet-plans.*') ? 'active' : '' }}">
+               class="gh-nav-item {{ request()->routeIs('diet-plans.*', 'food-items.*', 'food-categories.*') ? 'active' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0l-1.5-.75M3 12.75l-1.5.75" /></svg>
-                Diet Plans
+                Diet & Nutrition
                 <svg class="ml-auto transition-transform duration-200" :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </a>
             <div x-show="open" x-transition class="gh-nav-submenu">
-                <a href="{{ route('diet-plans.index') }}?type=default" class="gh-nav-item">Default Plans</a>
-                <a href="{{ route('diet-plans.index') }}?type=custom"  class="gh-nav-item">Custom Plans</a>
+                <a href="{{ route('diet-plans.index') }}?type=default" class="gh-nav-item">Diet Plans</a>
+                <a href="{{ route('food-items.index') }}"  class="gh-nav-item">Food & Drinks</a>
+                <a href="{{ route('food-categories.index') }}"  class="gh-nav-item">Categories</a>
             </div>
         </div>
         @endmodule

@@ -40,6 +40,13 @@
                             </div>
 
                             <div class="gh-form-group" style="margin:0;">
+                                <label class="gh-label" for="password">Password <span style="color:red;">*</span></label>
+                                <input type="password" id="password" name="password" class="gh-input @error('password') border-red-400 @enderror"
+                                       placeholder="Enter password" required>
+                                @error('password')<p class="gh-form-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div class="gh-form-group" style="margin:0;">
                                 <label class="gh-label" for="gender">Gender</label>
                                 <select id="gender" name="gender" class="gh-input">
                                     <option value="">Select Gender</option>
@@ -120,6 +127,19 @@
                                     <option value="weight_loss" {{ old('goal') === 'weight_loss' ? 'selected' : '' }}>Weight Loss</option>
                                     <option value="muscle_gain" {{ old('goal') === 'muscle_gain' ? 'selected' : '' }}>Muscle Gain</option>
                                     <option value="endurance"   {{ old('goal') === 'endurance'   ? 'selected' : '' }}>Endurance</option>
+                                </select>
+                            </div>
+
+                            <div class="gh-form-group" style="margin:0;">
+                                <label class="gh-label" for="workout_plan_id">Workout Plan</label>
+                                <select id="workout_plan_id" name="workout_plan_id" class="gh-input">
+                                    <option value="">Select Plan (optional)</option>
+                                    @php
+                                    $selectedWorkout = old('workout_plan_id', $workoutPlans->first() ? $workoutPlans->first()->id : '');
+                                    @endphp
+                                    @foreach($workoutPlans as $plan)
+                                    <option value="{{ $plan->id }}" {{ $selectedWorkout == $plan->id ? 'selected' : '' }}>{{ $plan->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 

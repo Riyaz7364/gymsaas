@@ -73,6 +73,7 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
         Route::get('/attendance/search-members', [\App\Http\Controllers\AttendanceController::class, 'searchMembers'])->name('attendance.search-members');
         Route::post('/attendance/check-in', [\App\Http\Controllers\AttendanceController::class, 'checkIn'])->name('attendance.check-in');
         Route::patch('/attendance/{attendance}/check-out', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendance.check-out');
+        Route::get('/attendance/generate-qr', [\App\Http\Controllers\AttendanceController::class, 'generateQr'])->name('attendance.generate-qr');
     });
 
     Route::middleware('module:finance_management')->group(function () {
@@ -95,6 +96,8 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
         Route::resource('diet-plans', \App\Http\Controllers\DietPlanController::class);
         Route::post('/diet-plans/{dietPlan}/meals', [\App\Http\Controllers\DietPlanController::class, 'mealStore'])->name('diet-plans.meals.store');
         Route::delete('/diet-plans/{dietPlan}/meals/{meal}', [\App\Http\Controllers\DietPlanController::class, 'mealDestroy'])->name('diet-plans.meals.destroy');
+        Route::resource('food-categories', \App\Http\Controllers\FoodCategoryController::class);
+        Route::resource('food-items', \App\Http\Controllers\FoodItemController::class);
     });
 
     // AI Diet Plans (premium module)
@@ -163,6 +166,16 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
     Route::post('/payment/razorpay/webhook', [\App\Http\Controllers\Payment\RazorpayController::class, 'webhook'])->name('payment.razorpay.webhook');
     Route::post('/payment/stripe/webhook',   [\App\Http\Controllers\Payment\StripeController::class, 'webhook'])->name('payment.stripe.webhook');
     Route::get('/payment/razorpay/callback', [\App\Http\Controllers\Payment\RazorpayController::class, 'callback'])->name('payment.razorpay.callback');
+});
+
+// â”€â”€ Member routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+Route::get('/member/login', [\App\Http\Controllers\MemberAuthController::class, 'showLoginForm'])->name('member.login');
+Route::post('/member/login', [\App\Http\Controllers\MemberAuthController::class, 'login']);
+
+Route::middleware('auth:member')->group(function () {
+    Route::get('/member/dashboard', [\App\Http\Controllers\MemberAuthController::class, 'dashboard'])->name('member.dashboard');
+    Route::post('/member/logout', [\App\Http\Controllers\MemberAuthController::class, 'logout'])->name('member.logout');
+    Route::post('/member/scan-qr', [\App\Http\Controllers\MemberAuthController::class, 'scanQr'])->name('member.scan-qr');
 });
 
 // â”€â”€ Super Admin routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
