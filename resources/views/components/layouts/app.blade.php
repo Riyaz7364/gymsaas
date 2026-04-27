@@ -17,7 +17,10 @@
 <div id="nprogress-bar" class="hidden"></div>
 
 {{-- Sidebar --}}
-<aside class="gh-sidebar" id="sidebar" x-data="{ open: false }">
+<aside class="gh-sidebar relative" id="sidebar" x-data="{ open: false }">
+    <button onclick="document.getElementById('sidebar').classList.remove('open')" class="md:hidden absolute top-4 right-4 p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
     <a href="{{ route('dashboard') }}" class="gh-sidebar-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <rect width="32" height="32" rx="8" fill="#0abf8e"/>
@@ -118,6 +121,21 @@
         </div>
         @endmodule
 
+        @module('body_progress')
+        <div x-data="{ open: {{ request()->routeIs('body-stats.*', 'progress-photos.*') ? 'true' : 'false' }} }">
+            <a href="#" @click.prevent="open = !open"
+               class="gh-nav-item {{ request()->routeIs('body-stats.*', 'progress-photos.*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
+                Body Progress
+                <svg class="ml-auto transition-transform duration-200" :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </a>
+            <div x-show="open" x-transition class="gh-nav-submenu">
+                <a href="{{ route('body-stats.index') }}" class="gh-nav-item {{ request()->routeIs('body-stats.*') ? 'active' : '' }}">Body Stats</a>
+                <a href="{{ route('progress-photos.index') }}" class="gh-nav-item {{ request()->routeIs('progress-photos.*') ? 'active' : '' }}">Progress Photos</a>
+            </div>
+        </div>
+        @endmodule
+
         @module('attendance_management')
         <a href="{{ route('attendance.index') }}"
            class="gh-nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
@@ -142,13 +160,13 @@
         </div>
         @endmodule
 
-        @module('locker_management')
+        {{-- @module('locker_management')
         <a href="{{ route('lockers.index') }}"
            class="gh-nav-item {{ request()->routeIs('lockers.*') ? 'active' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
             Locker
         </a>
-        @endmodule
+        @endmodule --}}
 
         {{-- More --}}
         <div class="gh-nav-group-label">More</div>

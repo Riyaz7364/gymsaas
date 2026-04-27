@@ -118,7 +118,7 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
 
     Route::middleware('module:body_progress')->group(function () {
         Route::resource('body-stats', \App\Http\Controllers\Health\BodyStatController::class);
-        Route::resource('progress-photos', \App\Http\Controllers\Health\ProgressPhotoController::class);
+        Route::get('progress-photos', [\App\Http\Controllers\Health\BodyStatController::class, 'gallery'])->name('progress-photos.index');
     });
 
     Route::middleware('module:locker_management')->group(function () {
@@ -169,6 +169,17 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
 });
 
 // â”€â”€ Member routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+Route::middleware('guest:trainer')->group(function () {
+    Route::get('/trainer/login', [\App\Http\Controllers\TrainerAuthController::class, 'showLoginForm'])->name('trainer.login');
+    Route::post('/trainer/login', [\App\Http\Controllers\TrainerAuthController::class, 'login']);
+});
+
+Route::middleware('auth:trainer')->name('trainer.')->group(function () {
+    Route::post('/trainer/logout', [\App\Http\Controllers\TrainerAuthController::class, 'logout'])->name('logout');
+    Route::get('/trainer/dashboard', [\App\Http\Controllers\TrainerAuthController::class, 'dashboard'])->name('dashboard');
+    Route::resource('/trainer/workout-plans', \App\Http\Controllers\Trainer\WorkoutPlanController::class);
+});
+
 Route::get('/member/login', [\App\Http\Controllers\MemberAuthController::class, 'showLoginForm'])->name('member.login');
 Route::post('/member/login', [\App\Http\Controllers\MemberAuthController::class, 'login']);
 
@@ -176,6 +187,7 @@ Route::middleware('auth:member')->group(function () {
     Route::get('/member/dashboard', [\App\Http\Controllers\MemberAuthController::class, 'dashboard'])->name('member.dashboard');
     Route::post('/member/logout', [\App\Http\Controllers\MemberAuthController::class, 'logout'])->name('member.logout');
     Route::post('/member/scan-qr', [\App\Http\Controllers\MemberAuthController::class, 'scanQr'])->name('member.scan-qr');
+    Route::post('/member/review-trainer', [\App\Http\Controllers\MemberAuthController::class, 'submitTrainerReview'])->name('member.review-trainer');
 });
 
 // â”€â”€ Super Admin routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

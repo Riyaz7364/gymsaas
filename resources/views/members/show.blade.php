@@ -543,11 +543,37 @@
             </div>{{-- /messages --}}
 
             {{-- ─── BODY STATS TAB ─── --}}
-            <div x-show="tab === 'health'" x-transition>
+            @php
+                $latestBodyStat = $member->latestBodyStat;
+                $latestPhotos = $latestBodyStat
+                    ? $latestBodyStat->photos->sortByDesc('created_at')->unique('id')->values()
+                    : collect();
+
+                $galleryPhotos = $latestPhotos->map(function($photo) use ($latestBodyStat) {
+                    return [
+                        'id' => $photo->id,
+                        'url' => asset('storage/' . $photo->photo_path),
+                        'date' => optional($latestBodyStat->date)->format('d M Y'),
+                        'label' => optional($latestBodyStat->date)->format('d M Y') . ' progress photo',
+                    ];
+                })->values()->toArray();
+
+                $galleryPhotoIndexes = [];
+                foreach ($galleryPhotos as $index => $photo) {
+                    $galleryPhotoIndexes[$photo['id']] = $index;
+                }
+            @endphp
+            <div x-show="tab === 'health'" x-transition x-data="bodyStatGallery(@js($galleryPhotos))">
                 <div class="gh-card">
                     <div class="gh-card-header">
                         <h3 class="gh-card-title">Latest Body Stats</h3>
-                        <a href="{{ route('body-stats.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Stats</a>
+                        <div style="display:flex; gap:8px;">
+                            @if($member->latestBodyStat)
+                            <a href="{{ route('progress-photos.index', ['member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View Uploads</a>
+                            <a href="{{ route('body-stats.index', ['member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View All</a>
+                            @endif
+                            <a href="{{ route('body-stats.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Stats</a>
+                        </div>
                     </div>
                     <div class="gh-card-body">
                         @if($member->latestBodyStat)
@@ -562,6 +588,21 @@
                             @endforeach
                         </div>
                         <p style="font-size:12px; color:#9ca3af;">Last updated: {{ optional($bs->date)->format('d M Y') }}</p>
+
+                        @if($latestPhotos->count() > 0)
+                        <div style="margin-top: 16px;">
+                            <div style="font-size:13px; font-weight:600; color:#374151; margin-bottom:12px;">Latest Progress Photos</div>
+                            <div class="bodystats-gallery" style="display:grid; grid-gap:10px; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); grid-auto-rows:250px 150px; grid-auto-flow:dense;">
+                                @foreach($latestPhotos as $index => $photo)
+                                <div class="item" style="overflow:hidden; border-radius:18px; box-shadow:0 16px 40px rgba(15,23,42,.12);">
+                                    <button type="button" @click="open({{ $galleryPhotoIndexes[$photo->id] }})" style="all:unset; cursor:pointer; display:block; width:100%; height:100%;">
+                                        <img src="{{ asset('storage/' . $photo->photo_path) }}" alt="Body stat photo" style="width:100%; height:100%; object-fit:cover; display:block;" />
+                                    </button>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                         @else
                         <div style="text-align:center; padding:40px 0;">
                             <div style="font-size:36px; margin-bottom:12px;">📊</div>
@@ -569,6 +610,16 @@
                             <a href="{{ route('body-stats.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">Record First Stats</a>
                         </div>
                         @endif
+                    </div>
+                </div>
+
+                <div x-show="activeIndex !== null" x-cloak style="position:fixed; inset:0; z-index:99999; background:rgba(15,23,42,.88); display:flex; align-items:center; justify-content:center; padding:24px;">
+                    <div @click.away="close()" style="position:relative; max-width:920px; width:100%; max-height:calc(100vh - 48px); background:#111; border-radius:24px; overflow:hidden; box-shadow:0 32px 90px rgba(0,0,0,.45);">
+                        <button type="button" @click="close()" style="position:absolute; top:14px; right:14px; z-index:10; width:42px; height:42px; border:none; border-radius:50%; background:rgba(255,255,255,.18); color:#fff; font-size:22px; cursor:pointer;">×</button>
+                        <div style="padding:20px; display:flex; align-items:center; justify-content:center; min-height:360px;">
+                            <img :src="activePhoto.url" :alt="activePhoto.label" draggable="false" style="max-width:100%; max-height:calc(100vh - 120px); object-fit:contain; border-radius:16px;" />
+                        </div>
+                        <div style="padding:14px 20px; background:#0f172a; color:#e2e8f0; font-size:14px; text-align:center;">{{-- placeholder --}}<span x-text="activePhoto.label"></span></div>
                     </div>
                 </div>
             </div>{{-- /health --}}
@@ -596,4 +647,50 @@
 
         </div>{{-- /tabs --}}
     </div>
+
+    @push('scripts')
+    <script>
+        function bodyStatGallery(initialPhotos) {
+            return {
+                photos: initialPhotos || [],
+                activeIndex: null,
+                open(index) {
+                    if (this.photos.length === 0) return;
+                    this.activeIndex = index;
+                    document.body.style.overflow = 'hidden';
+                },
+                close() {
+                    this.activeIndex = null;
+                    document.body.style.overflow = '';
+                },
+                get activePhoto() {
+                    return this.photos[this.activeIndex] || null;
+                }
+            }
+        }
+    </script>
+    <style>
+        .bodystats-gallery {
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-auto-rows: 250px 150px;
+            grid-auto-flow: dense;
+        }
+        .bodystats-gallery .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .bodystats-gallery .item:first-child {
+            grid-row: span 2;
+            grid-column: span 2;
+        }
+        @media (min-width: 480px) {
+            .bodystats-gallery .item:nth-child(3n) {
+                grid-column: span 2;
+            }
+        }
+    </style>
+    @endpush
 </x-layouts.app>

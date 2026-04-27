@@ -12,7 +12,7 @@
     @endif
 
     {{-- Stat cards --}}
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px;">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
         <div class="gh-stat-card">
             <div class="gh-stat-icon" style="background:#e0f7f1;"><i class="fas fa-user-check" style="color:#0abf8e;"></i></div>
             <div class="gh-stat-body">
@@ -36,19 +36,19 @@
         </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start;">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 items-start">
 
         {{-- Attendance table --}}
         <div>
             <div class="gh-card">
-                <div class="gh-card-header">
+                <div class="gh-card-header flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <h3 class="gh-card-title">Attendance Log</h3>
-                    <div style="display:flex; gap:8px; align-items:center;">
+                    <div class="flex flex-wrap gap-2 items-center">
                         <a href="{{ route('attendance.generate-qr') }}" class="gh-btn gh-btn-primary gh-btn-sm">
                             <i class="fas fa-qrcode"></i> Generate Daily QR
                         </a>
                         {{-- Date filter --}}
-                        <form method="GET" style="display:flex; gap:8px; align-items:center;">
+                        <form method="GET" class="flex flex-wrap gap-2 items-center">
                             <input type="date" name="date" value="{{ $date }}" class="gh-input" style="width:auto; padding:6px 10px;">
                             <button type="submit" class="gh-btn gh-btn-outline gh-btn-sm">Filter</button>
                             @if($date !== today()->toDateString())
@@ -58,6 +58,7 @@
                 </div>
             </div>
                 <div class="gh-card-body" style="padding:0;">
+                    <div class="overflow-x-auto">
                     <table class="gh-table">
                         <thead>
                             <tr>
@@ -120,6 +121,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                     @if($records->hasPages())
                     <div style="padding:16px 20px;">{{ $records->appends(['date' => $date])->links() }}</div>
                     @endif

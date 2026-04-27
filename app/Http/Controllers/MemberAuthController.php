@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
+use App\Models\TrainerReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Member;
 
 class MemberAuthController extends Controller
 {
@@ -90,5 +91,42 @@ class MemberAuthController extends Controller
         ]);
 
         return view('member.dashboard', compact('member'));
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('member')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('member.login');
+    }
+
+    public function submitTrainerReview(Request $request)
+    {
+        $member = Auth::guard('member')->user();
+        if (! $member) {
+            return redirect()->route('member.login');
+        }
+
+        $trainer = $member->trainer->first();
+        if (! $trainer) {
+            return back()->withErrors(['trainer' => 'No trainer assigned to submit a review.']);
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        TrainerReview::create([
+            'gym_id' => $member->gym_id,
+            'trainer_id' => $trainer->id,
+            'member_id' => $member->id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return back()->with('success', 'Thank you for sharing your feedback.');
     }
 }

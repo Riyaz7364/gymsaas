@@ -81,6 +81,23 @@ class AttendanceController extends Controller
         return back()->with('success', "{$member->name} checked in successfully.");
     }
 
+    public function checkOut(Attendance $attendance)
+    {
+        $gymId = auth()->user()->gym_id;
+
+        if ($attendance->gym_id !== $gymId) {
+            abort(403);
+        }
+
+        if ($attendance->check_out) {
+            return back()->with('error', 'Already checked out.');
+        }
+
+        $attendance->update(['check_out' => now()]);
+
+        return back()->with('success', "{$attendance->member->name} checked out successfully.");
+    }
+
     public function generateQr()
     {
         $gymId = auth()->user()->gym_id;

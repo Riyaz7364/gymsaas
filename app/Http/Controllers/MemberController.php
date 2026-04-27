@@ -10,6 +10,7 @@ use App\Models\WorkoutSequence;
 use App\Models\WorkoutPlan;
 use App\Models\WorkoutPlanItem;
 use App\Models\Trainer;
+use App\Models\TrainerMemberHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -162,9 +163,9 @@ class MemberController extends Controller
             'memberPlans.plan',
             'trainer',
             'trainerSchedules.trainer',
-            'bodyStats',
+            'bodyStats.photos',
             'attendances'    => fn($q) => $q->latest()->limit(20),
-            'latestBodyStat',
+            'latestBodyStat.photos',
             'dietPlan.meals',
             'workoutPlan.items.activity',
             'workoutProgress',
@@ -276,7 +277,9 @@ class MemberController extends Controller
         // Deactivate existing active plan
         MemberPlan::where('member_id', $member->id)->where('status', 'active')->update(['status' => 'expired']);
 
-        MemberPlan::create([
+        $previousPlan = $member->activePlan;
+
+        $newMemberPlan = MemberPlan::create([
             'gym_id'     => $gymId,
             'member_id'  => $member->id,
             'plan_id'    => $plan->id,
@@ -288,6 +291,10 @@ class MemberController extends Controller
 
         $member->update(['status' => 'active']);
 
+        if ($previousPlan && $member->trainer()->exists()) {
+            $this->recordTrainerHistory($member, 'renewed', "Plan renewed to {$plan->name}.", $newMemberPlan->id);
+        }
+
         return back()->with('success', "Plan \"{$plan->name}\" assigned successfully.");
     }
 
@@ -297,6 +304,10 @@ class MemberController extends Controller
 
         $newStatus = $member->status === 'frozen' ? 'active' : 'frozen';
         $member->update(['status' => $newStatus]);
+
+        if ($newStatus !== 'active' && $member->trainer()->exists()) {
+            $this->recordTrainerHistory($member, 'left', "Member status changed to {$newStatus}.");
+        }
 
         $msg = $newStatus === 'frozen' ? 'Member account frozen.' : 'Member account unfrozen.';
         return back()->with('success', $msg);
@@ -315,12 +326,27 @@ class MemberController extends Controller
             $member->trainer()->sync([
                 $request->trainer_id => ['assigned_at' => now(), 'gym_id' => $gymId],
             ]);
+
+            if (! $member->workoutPlan) {
+                WorkoutPlan::create([
+                    'gym_id' => $gymId,
+                    'member_id' => $member->id,
+                    'trainer_id' => $request->trainer_id,
+                    'name' => 'Default workout plan',
+                    'description' => 'Default workout created when trainer assigned.',
+                    'is_default' => true,
+                    'is_active' => true,
+                ]);
+            }
+
+            $this->recordTrainerHistory($member, 'assigned', "Assigned to trainer ID {$request->trainer_id}.");
             return back()->with('success', 'Trainer assigned successfully.');
         }
 
         $member->trainer()->detach();
         // Also remove member from any schedule slots belonging to those trainers
         $member->trainerSchedules()->detach();
+        $this->recordTrainerHistory($member, 'removed', 'Trainer removed from member.');
         return back()->with('success', 'Trainer removed.');
     }
 
@@ -339,6 +365,21 @@ class MemberController extends Controller
         $plan->update(['member_id' => $member->id, 'is_active' => true]);
 
         return back()->with('success', "Diet plan \"{$plan->name}\" activated for {$member->name}.");
+    }
+
+    private function recordTrainerHistory(Member $member, string $action, string $notes = null, ?int $relatedPlanId = null): void
+    {
+        foreach ($member->trainer()->pluck('trainers.id') as $trainerId) {
+            TrainerMemberHistory::create([
+                'gym_id' => $member->gym_id,
+                'trainer_id' => $trainerId,
+                'member_id' => $member->id,
+                'action' => $action,
+                'related_plan_id' => $relatedPlanId,
+                'notes' => $notes,
+                'occurred_at' => now()->toDateString(),
+            ]);
+        }
     }
 
     public function assignTrainerSchedule(Request $request, Member $member)
