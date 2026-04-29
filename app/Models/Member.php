@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Traits\BelongsToGym;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\TrainerSchedule;
 
-class Member extends Model
+class Member extends Authenticatable
 {
     use BelongsToGym;
 
     protected $fillable = [
-        'gym_id', 'member_no', 'name', 'email', 'phone',
+        'gym_id', 'member_no', 'name', 'email', 'phone', 'password',
         'gender', 'dob', 'address',
         'emergency_contact_name', 'emergency_contact_phone',
         'avatar', 'status', 'goal', 'whatsapp_optin',
@@ -26,6 +27,7 @@ class Member extends Model
         'dob'             => 'date',
         'joined_at'       => 'date',
         'whatsapp_optin'  => 'boolean',
+        'password'        => 'hashed',
     ];
 
     // ── Relationships ──────────────────────────────────────────────

@@ -9,10 +9,13 @@
     @endif
 
     {{-- Filter tabs --}}
-    <div style="margin-bottom:16px;display:flex;gap:8px;">
-        <a href="{{ route('diet-plans.index') }}" class="gh-btn {{ !request('type') ? 'gh-btn-primary' : 'gh-btn-outline' }}">All</a>
-        <a href="{{ route('diet-plans.index', ['type'=>'default']) }}" class="gh-btn {{ request('type')==='default' ? 'gh-btn-primary' : 'gh-btn-outline' }}">Defaults</a>
-        <a href="{{ route('diet-plans.index', ['type'=>'custom']) }}" class="gh-btn {{ request('type')==='custom' ? 'gh-btn-primary' : 'gh-btn-outline' }}">Custom</a>
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="{{ route('diet-plans.index', ['type'=>'default']) }}" class="gh-btn {{ request('type')==='default' || !request('type') ? 'gh-btn-primary' : 'gh-btn-outline' }}">Plans</a>
+        @if($showAiPlans)
+        <a href="{{ route('diet-plans.index', ['type'=>'ai']) }}" class="gh-btn {{ request('type')==='ai' ? 'gh-btn-primary' : 'gh-btn-outline' }}">AI Plans</a>
+        @endif
+        <a href="{{ route('diet-plans.index', ['type'=>'custom']) }}" class="gh-btn {{ request('type')==='custom' ? 'gh-btn-primary' : 'gh-btn-outline' }}">Custom Plans</a>
+        <a href="{{ route('food-items.index') }}" class="gh-btn gh-btn-outline">Food & Drinks</a>
     </div>
 
     <div class="gh-card">

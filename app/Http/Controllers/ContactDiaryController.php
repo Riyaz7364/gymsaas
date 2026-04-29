@@ -33,7 +33,7 @@ class ContactDiaryController extends Controller
         $data['gym_id']     = auth()->user()->gym_id;
         $data['assigned_to'] = auth()->id();
         ContactDiary::create($data);
-        return redirect()->route('contact-diary.index')->with('success', 'Contact added.');
+        return redirect(gym_route('gym.contact-diary.index'))->with('success', 'Contact added.');
     }
 
     public function show(string $id)
@@ -64,13 +64,13 @@ class ContactDiaryController extends Controller
             'status'         => 'required|in:open,done,cancelled',
         ]);
         $contact->update($data);
-        return redirect()->route('contact-diary.index')->with('success', 'Contact updated.');
+        return redirect(gym_route('gym.contact-diary.index'))->with('success', 'Contact updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         ContactDiary::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('contact-diary.index')->with('success', 'Contact deleted.');
+        return redirect(gym_route('gym.contact-diary.index'))->with('success', 'Contact deleted.');
     }
 }

@@ -28,10 +28,8 @@
             margin: 0;
             font-family: 'Manrope', sans-serif;
             color: var(--su-text);
-            background:
-                radial-gradient(circle at top left, rgba(13, 154, 115, 0.10), transparent 28%),
-                radial-gradient(circle at top right, rgba(214, 167, 82, 0.14), transparent 24%),
-                linear-gradient(180deg, #f7f3ec 0%, #f0ebe2 100%);
+            background: linear-gradient(135deg, #0abf8e 0%, #0891b2 100%);
+
         }
 
         .su-page { min-height: 100vh; display: flex; flex-direction: column; }
@@ -84,10 +82,10 @@
         }
         .su-shell {
             width: 100%;
-            max-width: 1220px;
+            max-width: 1280px;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 28px;
+            grid-template-columns: minmax(320px, 0.92fr) minmax(540px, 1.08fr);
+            gap: 32px;
             align-items: start;
         }
         .su-sidebar {
@@ -209,6 +207,7 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
         .su-mobile-steps {
             display: none;
@@ -320,6 +319,7 @@
             color: var(--su-muted);
             margin: 0 0 24px;
             line-height: 1.6;
+            margin-bottom: 3rem
         }
 
         .su-fg,
@@ -526,7 +526,16 @@
             color: #5f6b62;
         }
 
-        .su-otp-row { display: flex; gap: 8px; justify-content: center; margin: 18px 0 0; }
+        .su-otp-row { 
+            display: flex; 
+            gap: 8px; 
+            justify-content: center; 
+            margin: 18px 0 0; 
+        }
+
+        @media (max-width: 640px) {
+            .su-otp-row { gap: 3px; }   
+        }
         .su-otp-box {
             width: 48px;
             height: 52px;
@@ -563,24 +572,16 @@
         .su-vp-badge { font-size: 12px; font-weight: 600; color: #16a34a; }
         .su-vp-body { padding-top: 14px; }
         .su-otp-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-        .su-resend { font-size: 12px; color: #6b7280; }
         .su-otp-btn {
             padding: 9px 22px;
             background: var(--su-accent);
             color: #fff;
-            border-radius: 12px;
             border: none;
-            font-size: 13px;
+            border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.15s, opacity 0.15s;
-            font-family: 'Manrope', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
-        .su-otp-btn:hover:not(:disabled) { background: var(--su-accent-strong); }
-        .su-otp-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .su-otp-btn:disabled { opacity: 0.55; cursor: not-allowed; }
         .su-otp-error { font-size: 12px; color: #ef4444; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
         .su-vhdr-icon {
             width: 52px;
@@ -605,10 +606,7 @@
         }
         .su-resend-wait { color: #9ca3af; cursor: not-allowed; }
         .su-resend-active { color: var(--su-accent); font-weight: 700; }
-        .su-resend-active:hover { text-decoration: underline; }
         .su-btn-inactive { opacity: 0.38; cursor: not-allowed; pointer-events: none; }
-        .su-spin { animation: su-spin 0.8s linear infinite; display: inline-block; }
-        @keyframes su-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .su-type {
             border: 1.5px solid #e5e7eb;
@@ -621,7 +619,6 @@
             background: rgba(255, 255, 255, 0.82);
         }
         .su-type:hover { border-color: rgba(13, 154, 115, 0.34); }
-        .su-type.selected { border-color: var(--su-accent); }
         .su-type:has(input[name="start_type"]:checked) { border-color: var(--su-accent); }
         .su-type-hd { display: flex; align-items: flex-start; gap: 14px; }
         .su-type-ico { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
@@ -632,35 +629,32 @@
         .su-type-desc { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
         .su-type-green { font-size: 13px; font-weight: 600; color: #16a34a; margin-bottom: 10px; }
         .su-type-radio { flex-shrink: 0; margin-top: 2px; accent-color: var(--su-accent); width: 18px; height: 18px; cursor: pointer; }
-        .su-type-feats { display: flex; flex-direction: column; gap: 5px; padding-top: 4px; }
-        .su-feat { font-size: 13px; color: #374151; display: flex; align-items: center; gap: 7px; }
-        .su-feat-check { width: 14px; height: 14px; color: #16a34a; flex-shrink: 0; }
-        .su-badge-g { position: absolute; top: -10px; left: 16px; background: #16a34a; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: flex; align-items: center; gap: 4px; }
+        .su-badge-g { position: absolute; top: -10px; left: 16px; background: #16a34a; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
         .su-badge-p { position: absolute; top: -10px; left: 16px; background: var(--su-accent-strong); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
-        .su-billing-toggle { display: none; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
-        .su-type:has(input[name="start_type"][value="subscribe"]:checked) .su-billing-toggle { display: flex; }
+        .su-billing-toggle { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
         .su-billing-opt { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #374151; cursor: pointer; user-select: none; }
-        .su-billing-opt:has(input:checked) { color: var(--su-accent); font-weight: 700; }
         .su-billing-save { font-size: 11px; background: #dcfce7; color: #166534; padding: 1px 7px; border-radius: 20px; font-weight: 700; }
 
         .su-plan {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 18px;
-            padding: 18px 20px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.15s;
             position: relative;
-            background: rgba(255, 255, 255, 0.82);
+            border-left: solid 1px transparent;
         }
         .su-plan:hover { border-color: rgba(13, 154, 115, 0.34); }
-        .su-plan.selected { border-color: var(--su-accent); border-width: 2px; }
         .su-plan:has(input[type="radio"]:checked) {
             border-color: var(--su-accent);
             border-width: 2px;
             box-shadow: 0 8px 18px rgba(13, 154, 115, 0.08);
         }
-        .su-plan-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .su-plan-hd {     
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            border-left: solid 2px #29ab59;
+            border-radius: 20px;
+            padding: 5px 15px;
+            line-height: 2;
+        }
         .su-plan-info { flex: 1; }
         .su-plan-name-price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
         .su-plan-name { font-size: 16px; font-weight: 700; color: #111827; }
@@ -668,11 +662,20 @@
         .su-plan-unit { font-size: 13px; color: #6b7280; font-weight: 400; }
         .su-plan-free { font-size: 13px; font-weight: 600; color: #16a34a; margin-bottom: 2px; }
         .su-plan-desc { font-size: 13px; color: #6b7280; margin-bottom: 10px; }
-        .su-plan-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-        .su-plan-tag { font-size: 12px; font-weight: 500; color: #374151; background: #f3f4f6; border-radius: 6px; padding: 3px 10px; }
-        .su-plan-pop { position: absolute; top: -10px; right: 16px; background: var(--su-accent-strong); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.04em; }
-        .su-plan-radio-wrap { padding-top: 2px; }
-        .su-plan-tip { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: #6b7280; margin-top: 6px; }
+        .su-plan-pop { 
+            position: absolute;
+            top: 15px;
+            right: 16px;
+            left: 20px;
+            background: var(--su-accent-strong);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+            width: fit-content;
+         }
 
         .su-addon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
         .su-addon {
@@ -706,12 +709,7 @@
         .su-sel-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 0; border-top: 1px solid #f3f4f6; margin-top: 8px; }
         .su-sel-tl { font-size: 14px; font-weight: 700; color: #111827; }
         .su-sel-tv { font-size: 14px; font-weight: 800; color: #111827; }
-        .su-sel-annual { font-size: 12px; color: var(--su-accent-strong); margin-top: 5px; display: block; }
-        .su-sel-note { font-size: 11px; color: #9ca3af; margin-top: 3px; display: block; }
 
-        .su-confirm-icon { width: 56px; height: 56px; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; }
-        .su-confirm-title { font-size: 22px; font-weight: 800; color: #111827; text-align: center; margin-bottom: 4px; }
-        .su-confirm-sub { font-size: 13px; color: #6b7280; text-align: center; }
         .su-confirm-box {
             border: 1.5px solid #e5e7eb;
             border-radius: 18px;
@@ -767,7 +765,16 @@
             5 => ['label' => 'Enhance', 'note' => 'Add optional modules without changing your main plan.'],
             6 => ['label' => 'Confirm', 'note' => 'Review everything once before launching the account.'],
         ];
-        $cur = $currentStep ?? 1;
+        $cur = $currentStep
+            ?? match ($step ?? null) {
+                'account', 'verify' => 1,
+                'gym' => 2,
+                'start-type' => 3,
+                'plan' => 4,
+                'enhance' => 5,
+                'confirm' => 6,
+                default => 1,
+            };
     @endphp
 
     <div class="su-header">
@@ -852,7 +859,7 @@
                     </div>
                 </div>
 
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
     </div>

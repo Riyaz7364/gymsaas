@@ -117,6 +117,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="gh-form-group" style="margin:0 0 16px;">
+                            <label class="gh-label">Workout Plan</label>
+                            <select name="workout_plan_id" class="gh-input">
+                                @php
+                                $selectedWorkout = old('workout_plan_id', $member->workoutPlan ? $member->workoutPlan->id : ($workoutPlans->first() ? $workoutPlans->first()->id : ''));
+                                @endphp
+                                @foreach($workoutPlans as $plan)
+                                <option value="{{ $plan->id }}" {{ $selectedWorkout == $plan->id ? 'selected' : '' }}>{{ $plan->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="gh-form-group" style="margin:0;">
                             <label class="gh-label">Notes</label>
                             <textarea name="notes" class="gh-input" rows="3">{{ old('notes', $member->notes) }}</textarea>
@@ -168,22 +179,25 @@
                         <button type="submit" class="gh-btn gh-btn-primary" style="width:100%; justify-content:center; padding:11px;">
                             Save Changes
                         </button>
-                        <a href="{{ route('members.show', $member) }}"
-                           class="gh-btn gh-btn-outline" style="width:100%; justify-content:center; padding:11px; margin-top:10px; display:flex;">
-                            Cancel
-                        </a>
-                        <hr style="border:none; border-top:1px solid var(--gh-border); margin:16px 0;">
-                        <form method="POST" action="{{ route('members.destroy', $member) }}"
-                              x-data
-                              @submit.prevent="if(confirm('Permanently delete {{ addslashes($member->name) }}?')) $el.submit()">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="gh-btn gh-btn-danger" style="width:100%; justify-content:center; padding:11px;">
-                                Delete Member
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </form>
+
+    {{-- Cancel and Delete --}}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+        <a href="{{ route('members.show', $member) }}"
+           class="gh-btn gh-btn-outline">
+            Cancel
+        </a>
+        <form method="POST" action="{{ route('members.destroy', $member) }}"
+              x-data
+              @submit.prevent="if(confirm('Permanently delete {{ addslashes($member->name) }}?')) $el.submit()">
+            @csrf @method('DELETE')
+            <button type="submit" class="gh-btn gh-btn-danger">
+                Delete Member
+            </button>
+        </form>
+    </div>
 </x-layouts.app>

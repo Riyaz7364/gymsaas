@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+
+// Modals
+use App\Models\User;
+
 class LoginController extends Controller
 {
     public function showLoginForm()
@@ -22,10 +26,12 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             // Log failed attempt
+            $user = User::where('email', $request->email)->first();
+            if($user)
             LoginHistory::create([
-                'user_id'    => \App\Models\User::where('email', $request->email)->value('id'),
+                'user_id'    => $user->id,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'success'    => false,
@@ -70,6 +76,7 @@ class LoginController extends Controller
     private function redirectPath(\App\Models\User $user): string
     {
         if ($user->isSuperAdmin()) {
+            dd($user->gym()->slug);
             return route('super-admin.dashboard');
         }
         return route('dashboard');

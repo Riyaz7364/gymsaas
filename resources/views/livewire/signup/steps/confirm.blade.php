@@ -5,8 +5,9 @@
     $addons = session('signup.step5.selected_addons', []);
     $planLabel = $selectedPlan ? ($selectedPlan->display_name ?? $selectedPlan->name) : 'Starter';
     $planPrice = $selectedPlan ? (float) ($billing === 'annual' ? $selectedPlan->annual_price : $selectedPlan->monthly_price) : 0;
+    $addonsPayable = collect($addons)->sum('price');
     $addonTotal = collect($addons)->where('billing_type', 'monthly')->sum('price');
-    $monthlyTotal = $planPrice + $addonTotal;
+    $monthlyTotal = ($isTrial ? 0 : $planPrice) + $addonTotal;
 @endphp
 
 <div class="su-card wide" x-data="{ loading: false }">
@@ -16,7 +17,7 @@
         {{ $isTrial ? 'Start Your Free Trial' : 'Create Your Account' }}
     </h1>
     <p class="su-card-sub" style="text-align:center; margin-bottom:22px;">
-        {{ $isTrial ? 'No payment required. Cancel anytime.' : 'Get started immediately with ' . ucfirst($billing) . ' billing.' }}
+        {{ $isTrial ? 'Your base plan is free during trial. Paid add-ons are listed separately below.' : 'Get started immediately with ' . ucfirst($billing) . ' billing.' }}
     </p>
 
     <div class="su-confirm-box">
@@ -33,6 +34,10 @@
             <span class="su-confirm-val">{{ $isTrial ? '30 days free' : ucfirst($billing) }}</span>
         </div>
         <div class="su-confirm-row">
+            <span class="su-confirm-lbl">Plan Price</span>
+            <span class="su-confirm-val">{{ $isTrial ? 'Free during trial' : number_format($planPrice, 0) . '/mo' }}</span>
+        </div>
+        <div class="su-confirm-row">
             <span class="su-confirm-lbl">Gym</span>
             <span class="su-confirm-val">{{ $gymName }}</span>
         </div>
@@ -43,6 +48,13 @@
                 <span class="su-confirm-val">{{ number_format($addon['price'], 0) }} {{ ($addon['billing_type'] ?? '') === 'one_time' ? 'one-time' : '/mo' }}</span>
             </div>
         @endforeach
+
+        @if($addonsPayable > 0)
+            <div class="su-confirm-row">
+                <span class="su-confirm-lbl">Paid Add-ons</span>
+                <span class="su-confirm-val">{{ number_format($addonsPayable, 0) }}</span>
+            </div>
+        @endif
 
         <div class="su-confirm-row su-confirm-total-row">
             <span class="su-confirm-lbl" style="font-weight:700; color:#111827;">{{ $isTrial ? 'After Trial' : 'Monthly Total' }}</span>

@@ -29,7 +29,7 @@ class FinanceTypeController extends Controller
         ]);
         $data['gym_id'] = auth()->user()->gym_id;
         FinanceType::create($data);
-        return redirect()->route('finance-types.index')->with('success', 'Finance type added.');
+        return redirect(gym_route('gym.finance-types.index'))->with('success', 'Finance type added.');
     }
 
     public function edit(FinanceType $financeType)
@@ -45,12 +45,12 @@ class FinanceTypeController extends Controller
             'description' => 'nullable|string',
         ]);
         $financeType->update($data);
-        return redirect()->route('finance-types.index')->with('success', 'Finance type updated.');
+        return redirect(gym_route('gym.finance-types.index'))->with('success', 'Finance type updated.');
     }
 
     public function destroy(FinanceType $financeType)
     {
         $financeType->delete();
-        return redirect()->route('finance-types.index')->with('success', 'Finance type deleted.');
+        return redirect(gym_route('gym.finance-types.index'))->with('success', 'Finance type deleted.');
     }
 }

@@ -45,7 +45,7 @@ class LockerController extends Controller
             return back()->withErrors(['locker_no' => 'Locker number already exists.'])->withInput();
         }
         Locker::create($data);
-        return redirect()->route('lockers.index')->with('success', 'Locker created successfully.');
+        return redirect(gym_route('gym.lockers.index'))->with('success', 'Locker created successfully.');
     }
 
     public function show(string $id)
@@ -79,13 +79,13 @@ class LockerController extends Controller
             return back()->withErrors(['locker_no' => 'Locker number already exists.'])->withInput();
         }
         $locker->update($data);
-        return redirect()->route('lockers.index')->with('success', 'Locker updated.');
+        return redirect(gym_route('gym.lockers.index'))->with('success', 'Locker updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         Locker::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('lockers.index')->with('success', 'Locker deleted.');
+        return redirect(gym_route('gym.lockers.index'))->with('success', 'Locker deleted.');
     }
 }

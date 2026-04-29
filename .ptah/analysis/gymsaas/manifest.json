@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "slug": "gymsaas",
+  "analyzedAt": "2026-04-28T05:17:39.346Z",
+  "model": "opus",
+  "totalDurationMs": 6,
+  "phases": {
+    "project-profile": {
+      "status": "failed",
+      "file": "01-project-profile.md",
+      "durationMs": 1,
+      "error": "SDK not available (status: error). OpenAI Codex token has expired. Run `codex login` in your terminal to re-authenticate."
+    },
+    "architecture-assessment": {
+      "status": "failed",
+      "file": "02-architecture-assessment.md",
+      "durationMs": 0,
+      "error": "SDK not available (status: error). OpenAI Codex token has expired. Run `codex login` in your terminal to re-authenticate."
+    },
+    "quality-audit": {
+      "status": "failed",
+      "file": "03-quality-audit.md",
+      "durationMs": 1,
+      "error": "SDK not available (status: error). OpenAI Codex token has expired. Run `codex login` in your terminal to re-authenticate."
+    },
+    "elevation-plan": {
+      "status": "failed",
+      "file": "04-elevation-plan.md",
+      "durationMs": 0,
+      "error": "SDK not available (status: error). OpenAI Codex token has expired. Run `codex login` in your terminal to re-authenticate."
+    }
+  }
+}

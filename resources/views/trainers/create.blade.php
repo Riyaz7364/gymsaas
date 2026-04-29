@@ -35,12 +35,23 @@
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
+                            <label class="gh-label">Username <span style="color:red;">*</span></label>
+                            <input type="text" name="username" class="gh-input" value="{{ old('username') }}" required>
+                        </div>
+                        <div class="gh-form-group">
                             <label class="gh-label">Email</label>
                             <input type="email" name="email" class="gh-input" value="{{ old('email') }}">
                         </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
-                            <label class="gh-label">Specialization</label>
-                            <input type="text" name="specialization" class="gh-input" value="{{ old('specialization') }}" placeholder="e.g. Strength Training">
+                            <label class="gh-label">Password <span style="color:red;">*</span></label>
+                            <input type="password" name="password" class="gh-input" required>
+                        </div>
+                        <div class="gh-form-group">
+                            <label class="gh-label">Confirm Password <span style="color:red;">*</span></label>
+                            <input type="password" name="password_confirmation" class="gh-input" required>
                         </div>
                     </div>
 

@@ -7,6 +7,116 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Gym SaaS Payment System
+
+This application includes a production-ready payment system using Razorpay with the following features:
+
+### Payment Flows
+
+1. **Gym Owner → Platform (Subscription)**: Gym owners subscribe to the platform using Razorpay Subscriptions API
+2. **Member → Gym Owner (NO Commission)**: Members pay gyms directly with 100% transfer to gym owner's linked account
+
+### Key Components
+
+- **Controllers**: SubscriptionController, PaymentController, RazorpayAccountController
+- **Models**: GymSubscription, RazorpayAccount, Payment (with transfer tracking), Invoice
+- **Services**: RazorpayService for all API interactions
+- **Jobs**: TransferPaymentJob for asynchronous payment transfers
+- **Events**: PaymentCaptured for real-time notifications
+- **Routes**: API endpoints for payments, subscriptions, webhooks, and invoice management
+
+### Setup Instructions
+
+1. **Install Dependencies**:
+
+    ```bash
+    composer install
+    npm install
+    ```
+
+2. **Environment Configuration**:
+   Add these to your `.env` file:
+
+    ```env
+    RAZORPAY_KEY_ID=your_razorpay_key_id
+    RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+    RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
+    ```
+
+3. **Database Setup**:
+
+    ```bash
+    php artisan migrate
+    ```
+
+4. **Queue Configuration**:
+
+    ```bash
+    php artisan queue:work
+    ```
+
+5. **Frontend Integration**:
+   Include the Razorpay checkout script in your payment pages:
+    ```html
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="{{ asset('js/razorpay-checkout.js') }}"></script>
+    ```
+
+### API Endpoints
+
+- `POST /api/subscription/create` - Create gym subscription
+- `POST /api/payment/create-order` - Create payment order
+- `POST /api/payment/verify` - Verify payment
+- `POST /api/payment/transfer` - Manual transfer (if needed)
+- `POST /api/razorpay/account/create` - Create linked account
+- `GET /api/razorpay/account/status` - Get account status
+- `POST /api/razorpay/webhook` - Webhook handler
+
+### Invoice & Payment History Features
+
+When the `online_payments` module is enabled, additional features become available:
+
+#### Invoice Management
+
+- **PDF Generation**: Download invoices as PDF with professional formatting
+- **Payment Tracking**: View all payments associated with an invoice
+- **Status Management**: Track paid, partial, and unpaid invoice statuses
+
+#### Payment History
+
+- **Comprehensive History**: View all payment transactions with filtering
+- **Transfer Status**: Monitor Razorpay transfer status to gym accounts
+- **Retry Transfers**: Manually retry failed transfers
+- **Advanced Filtering**: Filter by status, method, member, and date range
+
+#### Navigation
+
+- Payment History appears in Finance menu when `online_payments` module is active
+- PDF download button available on invoice detail pages
+
+### Webhook Events
+
+The system handles these Razorpay webhook events:
+
+- `subscription.charged`
+- `payment.captured`
+- `payment.failed`
+
+### Security Features
+
+- Signature verification for payments and webhooks
+- CSRF protection on API endpoints
+- Authentication middleware on protected routes
+- Comprehensive error logging
+
+### Testing
+
+Run the test suite:
+
+```bash
+php artisan test
+```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

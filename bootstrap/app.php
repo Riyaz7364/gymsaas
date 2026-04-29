@@ -12,10 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'gym.active' => \App\Http\Middleware\EnsureGymActive::class,
-            'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'module'     => \App\Http\Middleware\CheckGymModule::class,
+            'gym.active'  => \App\Http\Middleware\EnsureGymActive::class,
+            'gym.access'  => \App\Http\Middleware\CheckGymAccess::class,
+            'role'        => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'  => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'module'      => \App\Http\Middleware\CheckGymModule::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

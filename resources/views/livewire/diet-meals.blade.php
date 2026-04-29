@@ -40,6 +40,21 @@
             <div style="flex:1; min-width:0;">
                 <div style="font-size:13px; font-weight:600; color:#111827;">{{ $meal->name }}</div>
                 @if($meal->time)<div style="font-size:11px; color:#9ca3af; margin-top:1px;">🕐 {{ $meal->time }}</div>@endif
+                @if($meal->foods && is_array($meal->foods) && count($meal->foods) > 0)
+                <div style="margin-top:6px;">
+                    @foreach($meal->foods as $food)
+                    <div style="font-size:11px; color:#6b7280; margin-top:2px;">
+                        • {{ $food['name'] ?? 'Unknown food' }}
+                        @if(isset($food['quantity']) && $food['quantity'] > 1)
+                        ({{ $food['quantity'] }}×)
+                        @endif
+                        @if(isset($food['serving_size']) && isset($food['serving_unit']))
+                        - {{ $food['serving_size'] }} {{ $food['serving_unit'] }}
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
                 @if($meal->total_calories)<span style="font-size:12px; font-weight:600; color:#ef4444;">{{ $meal->total_calories }} kcal</span>@endif

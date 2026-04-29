@@ -38,7 +38,7 @@ class EventController extends Controller
         $data['created_by'] = auth()->id();
         $data['all_day']    = $request->boolean('all_day');
         Event::create($data);
-        return redirect()->route('events.index')->with('success', 'Event created successfully.');
+        return redirect(gym_route('gym.events.index'))->with('success', 'Event created successfully.');
     }
 
     public function show(string $id)
@@ -72,14 +72,14 @@ class EventController extends Controller
         ]);
         $data['all_day'] = $request->boolean('all_day');
         $event->update($data);
-        return redirect()->route('events.index')->with('success', 'Event updated.');
+        return redirect(gym_route('gym.events.index'))->with('success', 'Event updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         Event::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('events.index')->with('success', 'Event deleted.');
+        return redirect(gym_route('gym.events.index'))->with('success', 'Event deleted.');
     }
 
     public function calendarData(Request $request)

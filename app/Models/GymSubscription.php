@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class GymSubscription extends Model
 {
     protected $fillable = [
-        'gym_id', 'plan_id', 'status', 'billing_cycle',
-        'amount', 'started_at', 'expires_at', 'cancelled_at', 'notes',
+        'gym_id', 'razorpay_subscription_id', 'plan_id', 'status', 'expires_at', 'subscription_data',
     ];
 
     protected $casts = [
-        'started_at'    => 'date',
-        'expires_at'    => 'date',
-        'cancelled_at'  => 'date',
-        'amount'        => 'decimal:2',
+        'expires_at'        => 'datetime',
+        'subscription_data' => 'array',
     ];
 
     public function gym(): BelongsTo

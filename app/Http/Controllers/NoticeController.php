@@ -31,7 +31,7 @@ class NoticeController extends Controller
         $data['gym_id']     = auth()->user()->gym_id;
         $data['created_by'] = auth()->id();
         Notice::create($data);
-        return redirect()->route('notices.index')->with('success', 'Notice published.');
+        return redirect(gym_route('gym.notices.index'))->with('success', 'Notice published.');
     }
 
     public function show(string $id)
@@ -60,13 +60,13 @@ class NoticeController extends Controller
             'expires_at'   => 'nullable|date',
         ]);
         $notice->update($data);
-        return redirect()->route('notices.index')->with('success', 'Notice updated.');
+        return redirect(gym_route('gym.notices.index'))->with('success', 'Notice updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         Notice::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('notices.index')->with('success', 'Notice deleted.');
+        return redirect(gym_route('gym.notices.index'))->with('success', 'Notice deleted.');
     }
 }

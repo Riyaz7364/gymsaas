@@ -36,10 +36,10 @@ class ExpenseController extends Controller
         $data['gym_id']  = auth()->user()->gym_id;
         $data['added_by'] = auth()->id();
         Expense::create($data);
-        return redirect()->route('expenses.index')->with('success', 'Expense recorded.');
+        return redirect(gym_route('gym.expenses.index'))->with('success', 'Expense recorded.');
     }
 
-    public function show(string $id) { return redirect()->route('expenses.index'); }
+    public function show(string $id) { return redirect(gym_route('gym.expenses.index')); }
 
     public function edit(string $id)
     {
@@ -61,13 +61,13 @@ class ExpenseController extends Controller
             'description'     => 'nullable|string',
         ]);
         $expense->update($data);
-        return redirect()->route('expenses.index')->with('success', 'Expense updated.');
+        return redirect(gym_route('gym.expenses.index'))->with('success', 'Expense updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         Expense::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('expenses.index')->with('success', 'Expense deleted.');
+        return redirect(gym_route('gym.expenses.index'))->with('success', 'Expense deleted.');
     }
 }

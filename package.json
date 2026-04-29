@@ -21,6 +21,9 @@
         "@fullcalendar/list": "^6.1.20",
         "@fullcalendar/timegrid": "^6.1.20",
         "alpinejs": "^3.15.11",
-        "apexcharts": "^5.10.5"
+        "apexcharts": "^5.10.5",
+        "filepond": "^4.32.12",
+        "jquery-filepond": "^1.0.0",
+        "qrcode": "^1.5.4"
     }
 }

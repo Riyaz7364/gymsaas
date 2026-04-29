@@ -35,7 +35,7 @@
 
         @if($subscribeOn)
             <label class="su-type">
-                <div class="su-badge-p">SAVE {{ $annualDisc }}%</div>
+                {{-- <div class="   ">SAVE {{ $annualDisc }}%</div> --}}
                 <div class="su-type-hd">
                     <div class="su-type-ico gray">S</div>
                     <div class="su-type-body">

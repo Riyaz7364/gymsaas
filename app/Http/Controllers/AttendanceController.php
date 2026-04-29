@@ -81,14 +81,35 @@ class AttendanceController extends Controller
         return back()->with('success', "{$member->name} checked in successfully.");
     }
 
-    public function checkOut(Request $request, Attendance $attendance)
+    public function checkOut(Attendance $attendance)
     {
-        abort_if($attendance->gym_id !== auth()->user()->gym_id, 403);
-        abort_if($attendance->check_out !== null, 422, 'Already checked out.');
+        $gymId = auth()->user()->gym_id;
+
+        if ($attendance->gym_id !== $gymId) {
+            abort(403);
+        }
+
+        if ($attendance->check_out) {
+            return back()->with('error', 'Already checked out.');
+        }
 
         $attendance->update(['check_out' => now()]);
 
-        return back()->with('success', "Check-out recorded for {$attendance->member->name}.");
+        return back()->with('success', "{$attendance->member->name} checked out successfully.");
+    }
+
+    public function generateQr()
+    {
+        $gymId = auth()->user()->gym_id;
+        $date = today()->format('Y-m-d');
+        $token = \Illuminate\Support\Str::random(16); // Simple token
+
+        $qrData = "{$gymId}-{$date}-{$token}";
+
+        // Store the token in cache or database for validation
+        \Cache::put("qr_token_{$gymId}_{$date}", $token, now()->endOfDay());
+
+        return view('attendance.qr', compact('qrData'));
     }
 
     /**

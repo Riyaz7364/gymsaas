@@ -11,14 +11,14 @@
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">All Invoices</h3>
-            <a href="{{ route('invoices.create') }}" class="gh-btn gh-btn-primary">+ New Invoice</a>
+            <a href="{{ gym_route('gym.invoices.create') }}" class="gh-btn gh-btn-primary">+ New Invoice</a>
         </div>
         @if($invoices->isEmpty())
         <div class="gh-card-body" style="text-align:center;padding:60px;">
             <div style="font-size:40px;margin-bottom:12px;">🧾</div>
             <h4>No invoices yet</h4>
             <p style="color:#9ca3af;font-size:14px;margin-bottom:16px;">Create invoices for your members.</p>
-            <a href="{{ route('invoices.create') }}" class="gh-btn gh-btn-primary">+ New Invoice</a>
+            <a href="{{ gym_route('gym.invoices.create') }}" class="gh-btn gh-btn-primary">+ New Invoice</a>
         </div>
         @else
         <div class="gh-card-body" style="padding:0;">
@@ -42,9 +42,9 @@
                     </td>
                     <td style="font-size:13px;color:#6b7280;">{{ $inv->due_date?->format('d M Y') ?? '—' }}</td>
                     <td>
-                        <a href="{{ route('invoices.show', $inv) }}" class="gh-btn gh-btn-outline gh-btn-sm">View</a>
-                        <a href="{{ route('invoices.edit', $inv) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
-                        <form method="POST" action="{{ route('invoices.destroy', $inv) }}" style="display:inline;" onsubmit="return confirm('Delete invoice?');">
+                        <a href="{{ route('gym.invoices.show', ['gym' => $gym, 'invoice' => $inv] ) }}" class="gh-btn gh-btn-outline gh-btn-sm">View</a>
+                        <a href="{{ route('gym.invoices.edit', ['gym' => $gym, 'invoice' => $inv] ) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                        <form method="POST" action="{{ route('gym.invoices.destroy',  ['gym' => $gym, 'invoice' => $inv] ) }}" style="display:inline;" onsubmit="return confirm('Delete invoice?');">
                             @csrf @method('DELETE')
                             <button class="gh-btn gh-btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;">Delete</button>
                         </form>

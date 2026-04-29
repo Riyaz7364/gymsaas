@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Gym;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('endmodule', function (): string {
             return '<?php endif; ?>';
         });
+
     }
 }
-

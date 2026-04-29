@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use App\Support\GymModuleRegistry;
 
 class Gym extends Model
 {
@@ -43,6 +45,21 @@ class Gym extends Model
         return $this->hasMany(Trainer::class);
     }
 
+    public function workoutLogs(): HasMany
+    {
+        return $this->hasMany(WorkoutLog::class);
+    }
+
+    public function whatsappLogs(): HasMany
+    {
+        return $this->hasMany(WhatsappLog::class);
+    }
+
+    public function loginHistories(): HasManyThrough
+    {
+        return $this->hasManyThrough(LoginHistory::class, User::class, 'gym_id', 'user_id');
+    }
+
     public function settings(): HasMany
     {
         return $this->hasMany(GymSetting::class);
@@ -58,6 +75,11 @@ class Gym extends Model
         return $this->hasOne(GymSubscription::class)
             ->whereIn('status', ['active', 'trial'])
             ->latestOfMany();
+    }
+
+    public function razorpayAccount(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(RazorpayAccount::class);
     }
 
     // ── Settings helpers ───────────────────────────────────────────
@@ -94,10 +116,7 @@ class Gym extends Model
      */
     public function hasModule(string $module): bool
     {
-        $subscription = $this->activeSubscription;
-        if (!$subscription || !$subscription->plan) {
-            return false;
-        }
-        return $subscription->plan->hasModule($module);
+        return in_array($module, GymModuleRegistry::gymKeys($this), true);
     }
+    
 }

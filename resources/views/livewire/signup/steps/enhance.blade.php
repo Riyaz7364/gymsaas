@@ -1,11 +1,13 @@
 @php
+    $isTrial = $start_type === 'trial';
     $billing = $billing_cycle ?: 'monthly';
-    $basePriceMonthly = $selectedPlan ? (float) ($billing === 'annual' ? $selectedPlan->annual_price : $selectedPlan->monthly_price) : 0;
+    $planPrice = $selectedPlan ? (float) ($billing === 'annual' ? $selectedPlan->annual_price : $selectedPlan->monthly_price) : 0;
+    $basePriceMonthly = $isTrial ? 0 : $planPrice;
     $planLabel = $selectedPlan ? ($selectedPlan->display_name ?? $selectedPlan->name) : 'Your Plan';
     $addons = $allModules->where('price', '>', 0);
 @endphp
 
-<div class="su-card wide" x-data="enhanceStep({ basePrice: {{ $basePriceMonthly }}, selected: $wire.entangle('selected_addons') })">
+<div class="su-card wide" x-data="enhanceStep({ basePrice: {{ $basePriceMonthly }}, selected: $wire.entangle('selected_addons'), isTrial: @js($isTrial) })">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
         <h1 class="su-card-title" style="margin:0;">Enhance your plan</h1>
         <button type="button" wire:click="skipEnhancements" class="su-link" style="font-size:13px; background:none; border:none; padding:0; cursor:pointer;">
@@ -16,6 +18,11 @@
     <p class="su-card-sub" style="margin-bottom:14px;">
         Recommended add-ons for <strong>{{ $planLabel }}</strong>.
     </p>
+    @if($isTrial)
+        <div class="su-alert info" style="margin-bottom:16px;">
+            Your plan stays free during trial, but selected add-ons are paid extras and will be reflected below.
+        </div>
+    @endif
 
     <form wire:submit.prevent="saveEnhancements">
         @if($addons->isEmpty())
@@ -44,7 +51,13 @@
             <div class="su-sel-title">Your Selection</div>
             <div class="su-sel-row">
                 <span class="su-sel-l">{{ $planLabel }} ({{ ucfirst($billing) }})</span>
-                <span class="su-sel-v"><span x-text="baseFormatted"></span>/mo</span>
+                <span class="su-sel-v">
+                    @if($isTrial)
+                        Free trial
+                    @else
+                        <span x-text="baseFormatted"></span>/mo
+                    @endif
+                </span>
             </div>
 
             <template x-for="addon in selectedAddons" :key="addon.key">
@@ -54,8 +67,13 @@
                 </div>
             </template>
 
+            <div class="su-sel-total" x-show="selectedAddons.length > 0">
+                <span class="su-sel-tl">Add-ons Payable</span>
+                <span class="su-sel-tv"><span x-text="addonsTotalFormatted"></span></span>
+            </div>
+
             <div class="su-sel-total">
-                <span class="su-sel-tl">Monthly Total</span>
+                <span class="su-sel-tl" x-text="isTrial ? 'Monthly Total After Trial' : 'Monthly Total'"></span>
                 <span class="su-sel-tv"><span x-text="totalFormatted"></span>/mo</span>
             </div>
         </div>
@@ -72,6 +90,7 @@ function enhanceStep(config) {
     return {
         checkedKeys: config.selected,
         basePrice: config.basePrice,
+        isTrial: config.isTrial,
 
         get baseFormatted() {
             return this.basePrice.toLocaleString('en-IN');
@@ -93,6 +112,13 @@ function enhanceStep(config) {
                     isMonthly: node.dataset.addonBilling !== 'one_time',
                 };
             }).filter(Boolean);
+        },
+
+        get addonsTotalFormatted() {
+            const addonsTotal = this.selectedAddons
+                .reduce((sum, addon) => sum + addon.price, 0);
+
+            return addonsTotal.toLocaleString('en-IN');
         },
 
         get totalFormatted() {

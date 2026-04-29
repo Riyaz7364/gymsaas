@@ -30,6 +30,8 @@ class TrainerController extends Controller
             'name'             => ['required', 'string', 'max:120'],
             'email'            => ['nullable', 'email', 'max:120'],
             'phone'            => ['required', 'string', 'max:20'],
+            'username'         => ['required', 'string', 'max:50', 'unique:trainers,username'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
             'specialization'   => ['nullable', 'string', 'max:120'],
             'bio'              => ['nullable', 'string'],
             'experience_years' => ['nullable', 'integer', 'min:0'],
@@ -40,6 +42,7 @@ class TrainerController extends Controller
         ]);
 
         $data['gym_id'] = auth()->user()->gym_id;
+        $data['password'] = bcrypt($data['password']);
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('avatars/trainers', 'public');
@@ -47,7 +50,7 @@ class TrainerController extends Controller
 
         Trainer::create($data);
 
-        return redirect()->route('trainers.index')->with('success', "Trainer {$data['name']} added.");
+        return redirect(gym_route('gym.trainers.index'))->with('success', "Trainer {$data['name']} added.");
     }
 
     public function show(Trainer $trainer)
@@ -92,6 +95,8 @@ class TrainerController extends Controller
             'name'             => ['required', 'string', 'max:120'],
             'email'            => ['nullable', 'email', 'max:120'],
             'phone'            => ['required', 'string', 'max:20'],
+            'username'         => ['required', 'string', 'max:50', 'unique:trainers,username,' . $trainer->id],
+            'password'         => ['nullable', 'string', 'min:8', 'confirmed'],
             'specialization'   => ['nullable', 'string', 'max:120'],
             'bio'              => ['nullable', 'string'],
             'experience_years' => ['nullable', 'integer', 'min:0'],
@@ -100,6 +105,12 @@ class TrainerController extends Controller
             'joined_at'        => ['nullable', 'date'],
             'avatar'           => ['nullable', 'image', 'max:2048'],
         ]);
+
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
+        }
 
         if ($request->hasFile('avatar')) {
             if ($trainer->avatar) {
@@ -110,7 +121,7 @@ class TrainerController extends Controller
 
         $trainer->update($data);
 
-        return redirect()->route('trainers.index')->with('success', "Trainer {$trainer->name} updated.");
+        return redirect(gym_route('gym.trainers.index'))->with('success', "Trainer {$trainer->name} updated.");
     }
 
     public function destroy(Trainer $trainer)
@@ -123,7 +134,7 @@ class TrainerController extends Controller
 
         $trainer->delete();
 
-        return redirect()->route('trainers.index')->with('success', 'Trainer removed.');
+        return redirect(gym_route('gym.trainers.index'))->with('success', 'Trainer removed.');
     }
 
     // ─── Schedule Management ──────────────────────────────────────────
