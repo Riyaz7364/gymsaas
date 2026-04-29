@@ -19,10 +19,10 @@
             @csrf
             <div class="space-y-5">
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                    <input id="phone" name="phone" type="text" value="{{ old('phone') }}" required
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input id="username" name="username" type="text" value="{{ old('username') }}" required
                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500" />
-                    @error('phone')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                    @error('username')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>

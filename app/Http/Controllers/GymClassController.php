@@ -41,7 +41,7 @@ class GymClassController extends Controller
         ]);
         $data['gym_id'] = auth()->user()->gym_id;
         GymClass::create($data);
-        return redirect()->route('classes.index')->with('success', 'Class created successfully.');
+        return redirect(gym_route('gym.classes.index'))->with('success', 'Class created successfully.');
     }
 
     public function show(string $id)
@@ -76,13 +76,13 @@ class GymClassController extends Controller
             'status'        => 'required|in:active,inactive',
         ]);
         $class->update($data);
-        return redirect()->route('classes.index')->with('success', 'Class updated successfully.');
+        return redirect(gym_route('gym.classes.index'))->with('success', 'Class updated successfully.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         GymClass::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('classes.index')->with('success', 'Class deleted.');
+        return redirect(gym_route('gym.classes.index'))->with('success', 'Class deleted.');
     }
 }

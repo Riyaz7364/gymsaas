@@ -120,7 +120,7 @@
         <div class="gh-card">
             <div class="gh-card-header">
                 <h3 class="gh-card-title">Recent Members</h3>
-                <a href="{{ route('members.index') }}" style="font-size:13px; color:#0abf8e; text-decoration:none;">View All -></a>
+                <a href="{{ gym_route('gym.members.index') }}" style="font-size:13px; color:#0abf8e; text-decoration:none;">View All -></a>
             </div>
             <div class="gh-card-body" style="padding:0;">
                 <table class="gh-table">
@@ -168,7 +168,7 @@
         <div class="gh-card">
             <div class="gh-card-header">
                 <h3 class="gh-card-title">Today's Attendance</h3>
-                <a href="{{ route('attendance.index') }}" style="font-size:13px; color:#0abf8e; text-decoration:none;">View All -></a>
+                <a href="{{ gym_route('gym.attendance.index') }}" style="font-size:13px; color:#0abf8e; text-decoration:none;">View All -></a>
             </div>
             <div class="gh-card-body" style="padding:0;">
                 <table class="gh-table">

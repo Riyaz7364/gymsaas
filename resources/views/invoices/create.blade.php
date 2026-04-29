@@ -2,7 +2,7 @@
     <x-slot:title>New Invoice — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>New Invoice</x-slot:header>
     <x-slot:topbarTitle>New Invoice</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('invoices.index') }}">Invoices</a> / New</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.invoices.index') }}">Invoices</a> / New</x-slot:breadcrumb>
 
     <div class="gh-card" style="max-width:640px;">
         <div class="gh-card-header"><h3 class="gh-card-title">Invoice Details</h3></div>
@@ -10,7 +10,7 @@
             @if($errors->any())
             <div class="gh-alert gh-alert-danger"><ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>
             @endif
-            <form method="POST" action="{{ route('invoices.store') }}">
+            <form method="POST" action="{{ gym_route('gym.invoices.store') }}">
                 @csrf
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                     <div style="grid-column:1/-1;">
@@ -47,7 +47,7 @@
                 </div>
                 <div style="margin-top:20px;display:flex;gap:10px;">
                     <button type="submit" class="gh-btn gh-btn-primary">Create Invoice</button>
-                    <a href="{{ route('invoices.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                    <a href="{{ gym_route('gym.invoices.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                 </div>
             </form>
         </div>

@@ -31,7 +31,7 @@ class FoodCategoryController extends Controller
         $data['gym_id'] = auth()->user()->gym_id;
         FoodCategory::create($data);
 
-        return redirect()->route('food-categories.index')->with('success', 'Category created successfully.');
+        return redirect(gym_route('gym.food-categories.index'))->with('success', 'Category created successfully.');
     }
 
     public function edit(FoodCategory $foodCategory)
@@ -52,13 +52,13 @@ class FoodCategoryController extends Controller
 
         $foodCategory->update($data);
 
-        return redirect()->route('food-categories.index')->with('success', 'Category updated successfully.');
+        return redirect(gym_route('gym.food-categories.index'))->with('success', 'Category updated successfully.');
     }
 
     public function destroy(FoodCategory $foodCategory)
     {
         abort_if($foodCategory->gym_id !== auth()->user()->gym_id, 403);
         $foodCategory->delete();
-        return redirect()->route('food-categories.index')->with('success', 'Category deleted successfully.');
+        return redirect(gym_route('gym.food-categories.index'))->with('success', 'Category deleted successfully.');
     }
 }

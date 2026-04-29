@@ -11,9 +11,9 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $gymId    = auth()->user()->gym_id;
-        $invoices = Invoice::where('gym_id', $gymId)->with('member')->latest()->paginate(20);
-        return view('invoices.index', compact('invoices'));
+        $gym    = auth()->user()->gym;
+        $invoices = Invoice::where('gym_id', $gym->id)->with('member')->latest()->paginate(20);
+        return view('invoices.index', compact(['invoices', 'gym']));
     }
 
     public function create()
@@ -40,20 +40,17 @@ class InvoiceController extends Controller
         $data['balance_due'] = $data['total'];
         $data['status']     = 'unpaid';
         Invoice::create($data);
-        return redirect()->route('invoices.index')->with('success', 'Invoice created.');
+        return redirect(gym_route('gym.invoices.index'))->with('success', 'Invoice created.');
     }
 
-    public function show(string $id)
+    public function show($gym, Invoice $invoice)
     {
-        $gymId   = auth()->user()->gym_id;
-        $invoice = Invoice::where('gym_id', $gymId)->with(['member', 'payments'])->findOrFail($id);
         return view('invoices.show', compact('invoice'));
     }
 
-    public function edit(string $id)
+    public function edit(Invoice $invoice)
     {
         $gymId   = auth()->user()->gym_id;
-        $invoice = Invoice::where('gym_id', $gymId)->findOrFail($id);
         $members = Member::where('gym_id', $gymId)->orderBy('name')->get();
         return view('invoices.edit', compact('invoice', 'members'));
     }
@@ -68,13 +65,23 @@ class InvoiceController extends Controller
             'notes'    => 'nullable|string',
         ]);
         $invoice->update($data);
-        return redirect()->route('invoices.index')->with('success', 'Invoice updated.');
+        return redirect(gym_route('gym.invoices.index'))->with('success', 'Invoice updated.');
     }
 
     public function destroy(string $id)
     {
         $gymId = auth()->user()->gym_id;
         Invoice::where('gym_id', $gymId)->findOrFail($id)->delete();
-        return redirect()->route('invoices.index')->with('success', 'Invoice deleted.');
+        return redirect(gym_route('gym.invoices.index'))->with('success', 'Invoice deleted.');
+    }
+
+    public function pdf(string $id)
+    {
+        $gymId = auth()->user()->gym_id;
+        $invoice = Invoice::where('gym_id', $gymId)->with(['member', 'payments'])->findOrFail($id);
+
+        $pdf = \PDF::loadView('invoices.pdf', compact('invoice'));
+
+        return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 }

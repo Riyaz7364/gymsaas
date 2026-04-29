@@ -17,17 +17,17 @@ class TrainerAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string',
+            'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('phone', 'password');
+        $credentials = $request->only('username', 'password');
 
         if (Auth::guard('trainer')->attempt($credentials, $request->boolean('remember'))) {
             return redirect()->route('trainer.dashboard');
         }
 
-        return back()->withErrors(['phone' => 'Invalid trainer credentials.'])->withInput();
+        return back()->withErrors(['username' => 'Invalid trainer credentials.'])->withInput();
     }
 
     public function logout(Request $request)

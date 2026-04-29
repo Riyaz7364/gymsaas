@@ -134,7 +134,7 @@ class DietPlanController extends Controller
             }
         }
 
-        return redirect()->route('diet-plans.index')->with('success', 'Diet plan created successfully.');
+        return redirect(gym_route('gym.diet-plans.index'))->with('success', 'Diet plan created successfully.');
     }
 
     public function edit(DietPlan $dietPlan)
@@ -268,13 +268,13 @@ class DietPlanController extends Controller
             $dietPlan->meals()->delete();
         }
 
-        return redirect()->route('diet-plans.index')->with('success', 'Diet plan updated.');
+        return redirect(gym_route('gym.diet-plans.index'))->with('success', 'Diet plan updated.');
     }
 
     public function destroy(DietPlan $dietPlan)
     {
         $dietPlan->delete();
-        return redirect()->route('diet-plans.index')->with('success', 'Diet plan deleted.');
+        return redirect(gym_route('gym.diet-plans.index'))->with('success', 'Diet plan deleted.');
     }
 
     public function mealStore(Request $request, DietPlan $dietPlan)
@@ -314,7 +314,7 @@ class DietPlanController extends Controller
     public function generateAi(DietPlan $dietPlan)
     {
         // AI generation stub — implement when AI service is configured
-        return redirect()->route('diet-plans.edit', $dietPlan)
+        return redirect(gym_route('gym.diet-plans.edit', [$dietPlan]))
             ->with('info', 'AI generation coming soon.');
     }
 }

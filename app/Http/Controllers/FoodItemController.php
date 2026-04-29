@@ -52,7 +52,7 @@ class FoodItemController extends Controller
 
         FoodItem::create($data);
 
-        return redirect()->route('food-items.index')->with('success', 'Food item created successfully.');
+        return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item created successfully.');
     }
 
     public function edit(FoodItem $foodItem)
@@ -85,13 +85,13 @@ class FoodItemController extends Controller
 
         $foodItem->update($data);
 
-        return redirect()->route('food-items.index')->with('success', 'Food item updated successfully.');
+        return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item updated successfully.');
     }
 
     public function destroy(FoodItem $foodItem)
     {
         abort_if($foodItem->gym_id !== auth()->user()->gym_id, 403);
         $foodItem->delete();
-        return redirect()->route('food-items.index')->with('success', 'Food item deleted successfully.');
+        return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item deleted successfully.');
     }
 }

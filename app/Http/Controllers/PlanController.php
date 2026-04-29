@@ -49,13 +49,13 @@ class PlanController extends Controller
 
         Plan::create($data);
 
-        return redirect()->route('plans.index')->with('success', "Plan \"{$data['name']}\" created.");
+        return redirect(gym_route('gym.plans.index'))->with('success', "Plan \"{$data['name']}\" created.");
     }
 
     public function show(Plan $plan)
     {
         abort_if($plan->gym_id !== auth()->user()->gym_id, 403);
-        return redirect()->route('plans.edit', $plan);
+        return redirect(gym_route('gym.plans.edit', [$plan]));
     }
 
     public function edit(Plan $plan)
@@ -84,7 +84,7 @@ class PlanController extends Controller
         $data['is_active'] = $request->boolean('is_active');
         $plan->update($data);
 
-        return redirect()->route('plans.index')->with('success', "Plan \"{$plan->name}\" updated.");
+        return redirect(gym_route('gym.plans.index'))->with('success', "Plan \"{$plan->name}\" updated.");
     }
 
     public function destroy(Plan $plan)
@@ -96,6 +96,6 @@ class PlanController extends Controller
         }
 
         $plan->delete();
-        return redirect()->route('plans.index')->with('success', 'Plan deleted.');
+        return redirect(gym_route('gym.plans.index'))->with('success', 'Plan deleted.');
     }
 }

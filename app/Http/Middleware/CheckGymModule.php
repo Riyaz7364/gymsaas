@@ -19,6 +19,7 @@ class CheckGymModule
      */
     public function handle(Request $request, Closure $next, string $module): Response
     {
+        
         $user = $request->user();
 
         if (!$user) {

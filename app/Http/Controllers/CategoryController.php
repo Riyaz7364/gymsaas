@@ -28,7 +28,7 @@ class CategoryController extends Controller
         ]);
         $data['gym_id'] = auth()->user()->gym_id;
         WorkoutCategory::create($data);
-        return redirect()->route('categories.index')->with('success', 'Category added.');
+        return redirect(gym_route('gym.categories.index'))->with('success', 'Category added.');
     }
 
     public function edit(WorkoutCategory $category)
@@ -44,12 +44,12 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
         $category->update($data);
-        return redirect()->route('categories.index')->with('success', 'Category updated.');
+        return redirect(gym_route('gym.categories.index'))->with('success', 'Category updated.');
     }
 
     public function destroy(WorkoutCategory $category)
     {
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted.');
+        return redirect(gym_route('gym.categories.index'))->with('success', 'Category deleted.');
     }
 }

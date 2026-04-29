@@ -149,7 +149,7 @@ class MemberController extends Controller
             $this->assignWorkoutPlanToMember($member, $validated['workout_plan_id']);
         }
 
-        return redirect()->route('members.show', $member)
+        return redirect(gym_route('gym.members.show', [$member]))
                          ->with('success', "Member {$member->name} added successfully.");
     }
 
@@ -241,7 +241,7 @@ class MemberController extends Controller
             }
         }
 
-        return redirect()->route('members.show', $member)
+        return redirect(gym_route('gym.members.show', [$member]))
                          ->with('success', 'Member updated successfully.');
     }
 
@@ -250,7 +250,7 @@ class MemberController extends Controller
         $this->authorizeGym($member);
         if ($member->avatar) Storage::disk('public')->delete($member->avatar);
         $member->delete();
-        return redirect()->route('members.index')->with('success', 'Member deleted.');
+        return redirect(gym_route('gym.members.index'))->with('success', 'Member deleted.');
     }
 
     public function plans(Member $member)

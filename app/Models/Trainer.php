@@ -14,7 +14,7 @@ class Trainer extends Authenticatable
     use BelongsToGym;
 
     protected $fillable = [
-        'gym_id', 'user_id', 'name', 'email', 'phone', 'password', 'avatar',
+        'gym_id', 'user_id', 'name', 'email', 'phone', 'username', 'password', 'avatar',
         'specialization', 'bio', 'experience_years', 'salary', 'status', 'joined_at',
     ];
 

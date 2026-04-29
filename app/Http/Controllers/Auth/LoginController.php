@@ -76,6 +76,7 @@ class LoginController extends Controller
     private function redirectPath(\App\Models\User $user): string
     {
         if ($user->isSuperAdmin()) {
+            dd($user->gym()->slug);
             return route('super-admin.dashboard');
         }
         return route('dashboard');

@@ -6,9 +6,29 @@ use App\Http\Controllers\DashboardController;
 use App\Livewire\SignupWizard;
 use Illuminate\Support\Facades\Route;
 
-// â”€â”€ Public routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Public routes 
 
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', function () {
+    if (auth('member')->check()) {
+        return redirect()->route('member.dashboard');
+    }
+
+    if (auth('trainer')->check()) {
+        return redirect()->route('trainer.dashboard');
+    }
+
+    if (auth()->check()) {
+        $user = auth()->user();
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+            return redirect()->route('super-admin.dashboard');
+        }
+        if ($user->gym_id && $gym = \App\Models\Gym::find($user->gym_id)) {
+            return redirect()->route('gym.dashboard', ['gym' => $gym->slug]);
+        }
+    }
+
+    return redirect()->route('login');
+});
 
 // PHP Info
 Route::get('/phpinfo', function () {
@@ -34,12 +54,12 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-// â”€â”€ WhatsApp Webhook (public â€” Meta verifies it) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// WhatsApp Webhook (public — Meta verifies it)
 Route::get('/webhook/whatsapp',  [\App\Http\Controllers\Whatsapp\WhatsappWebhookController::class, 'verify']);
 Route::post('/webhook/whatsapp', [\App\Http\Controllers\Whatsapp\WhatsappWebhookController::class, 'handle']);
 
-// â”€â”€ Authenticated gym routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::middleware(['auth', 'gym.active'])->group(function () {
+// Authenticated gym routes with gym access and active checks
+Route::scopeBindings()->middleware(['auth', 'gym.active', 'gym.access'])->prefix('/{gym:slug}')->name('gym.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/modules', [\App\Http\Controllers\ModuleController::class, 'index'])->name('modules.index');
@@ -77,11 +97,17 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
     });
 
     Route::middleware('module:finance_management')->group(function () {
-        Route::get('/finance', [\App\Http\Controllers\Finance\FinanceController::class, 'index'])->name('finance.index');
+        Route::get('/finance', [\App\Http\Controllers\Finance\FinanceController::class, 'index'])->name('finance');
         Route::resource('expenses', \App\Http\Controllers\Finance\ExpenseController::class);
         Route::resource('invoices', \App\Http\Controllers\Finance\InvoiceController::class);
         Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\Finance\InvoiceController::class, 'pdf'])->name('invoices.pdf');
         Route::post('/payments', [\App\Http\Controllers\Finance\InvoiceController::class, 'storePayment'])->name('payments.store');
+    });
+
+    Route::middleware('module:online_payments')->group(function () {
+        Route::get('/payments', [\App\Http\Controllers\Finance\PaymentHistoryController::class, 'index'])->name('payments');
+        Route::get('/payments/{payment}', [\App\Http\Controllers\Finance\PaymentHistoryController::class, 'show'])->name('payments.show');
+        Route::post('/payments/{payment}/retry-transfer', [\App\Http\Controllers\Finance\PaymentHistoryController::class, 'retryTransfer'])->name('payments.transfer');
     });
 
     Route::middleware('module:workout_management')->group(function () {
@@ -166,7 +192,7 @@ Route::middleware(['auth', 'gym.active'])->group(function () {
     Route::post('/payment/razorpay/webhook', [\App\Http\Controllers\Payment\RazorpayController::class, 'webhook'])->name('payment.razorpay.webhook');
     Route::post('/payment/stripe/webhook',   [\App\Http\Controllers\Payment\StripeController::class, 'webhook'])->name('payment.stripe.webhook');
     Route::get('/payment/razorpay/callback', [\App\Http\Controllers\Payment\RazorpayController::class, 'callback'])->name('payment.razorpay.callback');
-});
+}); // End Gym routes
 
 // â”€â”€ Member routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Route::middleware('guest:trainer')->group(function () {

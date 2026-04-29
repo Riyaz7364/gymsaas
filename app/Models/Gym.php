@@ -77,6 +77,11 @@ class Gym extends Model
             ->latestOfMany();
     }
 
+    public function razorpayAccount(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(RazorpayAccount::class);
+    }
+
     // ── Settings helpers ───────────────────────────────────────────
 
     public function getSetting(string $key, mixed $default = null): mixed
@@ -113,4 +118,5 @@ class Gym extends Model
     {
         return in_array($module, GymModuleRegistry::gymKeys($this), true);
     }
+    
 }
