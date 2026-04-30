@@ -23,7 +23,10 @@ return new class extends Migration
             $table->foreign('trainer_id')->references('id')->on('trainers')->cascadeOnDelete();
             $table->foreign('member_id')->references('id')->on('members')->cascadeOnDelete();
             $table->foreign('related_plan_id')->references('id')->on('member_plans')->nullOnDelete();
-            $table->index(['gym_id', 'trainer_id', 'member_id', 'action']);
+            $table->index(
+                ['gym_id', 'trainer_id', 'member_id', 'action'],
+                'tmh_gym_trainer_member_action_idx'
+            );
         });
     }
 

@@ -21,6 +21,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+
         $credentials = $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
@@ -76,9 +77,15 @@ class LoginController extends Controller
     private function redirectPath(\App\Models\User $user): string
     {
         if ($user->isSuperAdmin()) {
-            dd($user->gym()->slug);
             return route('super-admin.dashboard');
         }
-        return route('dashboard');
+        if($user->gym_id == null) {
+            $gym = Gym::where('user_id', $user->id)->where('status', 'active')->first();
+            if($gym){
+                $user->update(['gym_id' => $gym->id]);
+            }
+        }
+    
+        return gym_route('gym.dashboard');
     }
 }

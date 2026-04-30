@@ -3,7 +3,7 @@
     <x-slot:header>{{ $member->name }}</x-slot:header>
     <x-slot:topbarTitle>Members</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a> / {{ $member->name }}
+        Home / <a href="{{ gym_route('gym.members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a> / {{ $member->name }}
     </x-slot:breadcrumb>
 
     @if(session('success'))
@@ -66,15 +66,15 @@
 
                     {{-- Actions --}}
                     <div style="display:flex; gap:8px; margin-top:14px; justify-content:center; flex-wrap:wrap;">
-                        <a href="{{ route('members.edit', $member) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
-                        <form method="POST" action="{{ route('members.freeze', $member) }}" style="display:inline;">
+                        <a href="{{ gym_route('gym.members.edit', [$member]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                        <form method="POST" action="{{ gym_route('gym.members.freeze', [$member]) }}" style="display:inline;">
                             @csrf @method('PATCH')
                             <button type="submit" class="gh-btn gh-btn-outline gh-btn-sm"
                                     style="{{ $member->status === 'frozen' ? 'color:#3b82f6;border-color:#3b82f6;' : '' }}">
                                 {{ $member->status === 'frozen' ? 'Unfreeze' : 'Freeze' }}
                             </button>
                         </form>
-                        <a href="{{ route('members.plans', $member) }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Plan</a>
+                        <a href="{{ gym_route('gym.members.plans', [$member]) }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Plan</a>
                     </div>
                 </div>
             </div>
@@ -202,13 +202,13 @@
                 @else
                 <div style="text-align:center; padding:40px; background:#fff; border-radius:10px; border:1px solid var(--gh-border); margin-bottom:16px;">
                     <p style="color:#9ca3af; margin-bottom:12px;">No active membership plan.</p>
-                    <a href="{{ route('members.plans', $member) }}" class="gh-btn gh-btn-primary">Assign Plan</a>
+                    <a href="{{ gym_route('gym.members.plans', [$member]) }}" class="gh-btn gh-btn-primary">Assign Plan</a>
                 </div>
                 @endif
                 <div class="gh-card">
                     <div class="gh-card-header">
                         <h3 class="gh-card-title">Plan History</h3>
-                        <a href="{{ route('members.plans', $member) }}" class="gh-btn gh-btn-outline gh-btn-sm">Manage</a>
+                        <a href="{{ gym_route('gym.members.plans', [$member]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Manage</a>
                     </div>
                     <div class="gh-card-body" style="padding:0;">
                         <table class="gh-table">
@@ -290,7 +290,7 @@
                             @if($dp->goal)<span class="gh-badge gh-badge-success" style="font-size:11px;">{{ $goalLabels[$dp->goal] ?? $dp->goal }}</span>@endif
                         </div>
                         <div style="display:flex; gap:8px; align-items:center;">
-                            <a href="{{ route('diet-plans.edit', $dp) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit Plan</a>
+                            <a href="{{ gym_route('gym.diet-plans.edit', $dp) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit Plan</a>
                             <span class="gh-badge gh-badge-success">Active</span>
                         </div>
                     </div>
@@ -308,7 +308,7 @@
                     <div style="font-size:40px; margin-bottom:12px;">🥗</div>
                     <p style="color:#9ca3af; font-weight:500; margin-bottom:4px;">No active diet plan.</p>
                     <p style="font-size:12px; color:#9ca3af; margin-bottom:16px;">Assign an existing plan or create one for this member.</p>
-                    <a href="{{ route('diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary">Create New Diet Plan</a>
+                    <a href="{{ gym_route('gym.diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary">Create New Diet Plan</a>
                 </div>
                 @endif
 
@@ -317,7 +317,7 @@
                     <div class="gh-card-header"><h3 class="gh-card-title">Assign Diet Plan</h3></div>
                     <div class="gh-card-body">
                         @if($allDietPlans->count())
-                        <form method="POST" action="{{ route('members.assign-diet-plan', $member) }}" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                        <form method="POST" action="{{ gym_route('gym.members.assign-diet-plan', [$member]) }}" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
                             @csrf @method('PATCH')
                             <div style="flex:1; min-width:220px;">
                                 <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:6px;">Select plan</label>
@@ -331,11 +331,11 @@
                                 </select>
                             </div>
                             <button type="submit" class="gh-btn gh-btn-primary">Assign</button>
-                            <a href="{{ route('diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-outline">New Plan</a>
+                            <a href="{{ gym_route('gym.diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-outline">New Plan</a>
                         </form>
                         @else
                         <p style="color:#9ca3af; font-size:13px; margin-bottom:12px;">No diet plans exist yet.</p>
-                        <a href="{{ route('diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">Create First Diet Plan</a>
+                        <a href="{{ gym_route('gym.diet-plans.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">Create First Diet Plan</a>
                         @endif
                     </div>
                 </div>
@@ -378,7 +378,7 @@
                 <div style="font-size:36px; margin-bottom:12px;">⚠️</div>
                 <p style="color:#ef4444; font-weight:bold; margin-bottom:8px;">Empty Workout Sequence</p>
                 <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">The assigned sequence "<strong>{{ $sequence->name }}</strong>" has no days or exercises configured.</p>
-                <a href="{{ route('workout-sequences.index') }}" class="gh-btn gh-btn-outline">Manage Sequences</a>
+                <a href="{{ gym_route('gym.workout-sequences.index') }}" class="gh-btn gh-btn-outline">Manage Sequences</a>
             </div>
             @elseif($currentWorkout)
             {{-- Current day card --}}
@@ -569,10 +569,10 @@
                         <h3 class="gh-card-title">Latest Body Stats</h3>
                         <div style="display:flex; gap:8px;">
                             @if($member->latestBodyStat)
-                            <a href="{{ route('progress-photos.index', ['member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View Uploads</a>
-                            <a href="{{ route('body-stats.index', ['member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View All</a>
+                            <a href="{{ gym_route('gym.progress-photos.index', ['gym' => $gym, 'member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View Uploads</a>
+                            <a href="{{ gym_route('gym.body-stats.index', ['gym' => $gym, 'member_id' => $member->id]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View All</a>
                             @endif
-                            <a href="{{ route('body-stats.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Stats</a>
+                            <a href="{{ gym_route('gym.body-stats.create') }}?member_id={{ $member->id }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Stats</a>
                         </div>
                     </div>
                     <div class="gh-card-body">
@@ -629,7 +629,7 @@
                 <div class="gh-card">
                     <div class="gh-card-header">
                         <h3 class="gh-card-title">Member Notes</h3>
-                        <a href="{{ route('members.edit', $member) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                        <a href="{{ gym_route('gym.members.edit', [$member]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
                     </div>
                     <div class="gh-card-body">
                         @if($member->notes)
@@ -638,7 +638,7 @@
                         <div style="text-align:center; padding:40px 0;">
                             <div style="font-size:36px; margin-bottom:12px;">📝</div>
                             <p style="color:#9ca3af; margin-bottom:16px;">No notes added.</p>
-                            <a href="{{ route('members.edit', $member) }}" class="gh-btn gh-btn-outline gh-btn-sm">Add Notes</a>
+                            <a href="{{ gym_route('gym.members.edit', [$member]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Add Notes</a>
                         </div>
                         @endif
                     </div>

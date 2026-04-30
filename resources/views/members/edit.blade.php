@@ -3,12 +3,12 @@
     <x-slot:header>Edit Member</x-slot:header>
     <x-slot:topbarTitle>Members</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a>
-        / <a href="{{ route('members.show', $member) }}" style="color:var(--gh-primary);text-decoration:none;">{{ $member->name }}</a>
+        Home / <a href="{{ gym_route('gym.members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a>
+        / <a href="{{ gym_route('gym.members.show', [$member]) }}" style="color:var(--gh-primary);text-decoration:none;">{{ $member->name }}</a>
         / Edit
     </x-slot:breadcrumb>
 
-    <form method="POST" action="{{ route('members.update', $member) }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ gym_route('gym.members.update', [$member]) }}" enctype="multipart/form-data">
         @csrf @method('PUT')
 
         <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start;">
@@ -187,11 +187,11 @@
 
     {{-- Cancel and Delete --}}
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-        <a href="{{ route('members.show', $member) }}"
+        <a href="{{ gym_route('gym.members.show', [$member]) }}"
            class="gh-btn gh-btn-outline">
             Cancel
         </a>
-        <form method="POST" action="{{ route('members.destroy', $member) }}"
+        <form method="POST" action="{{ gym_route('gym.members.destroy', [$member]) }}"
               x-data
               @submit.prevent="if(confirm('Permanently delete {{ addslashes($member->name) }}?')) $el.submit()">
             @csrf @method('DELETE')

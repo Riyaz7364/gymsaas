@@ -11,12 +11,13 @@ class TrainerController extends Controller
 {
     public function index()
     {
+        $gym = auth()->user()->gym;
         $trainers = Trainer::withCount('members')
-            ->where('gym_id', auth()->user()->gym_id)
+            ->where('gym_id', $gym->id)
             ->orderBy('name')
             ->get();
 
-        return view('trainers.index', compact('trainers'));
+        return view('trainers.index', compact('trainers', 'gym'));
     }
 
     public function create()
@@ -53,12 +54,12 @@ class TrainerController extends Controller
         return redirect(gym_route('gym.trainers.index'))->with('success', "Trainer {$data['name']} added.");
     }
 
-    public function show(Trainer $trainer)
+    public function show($gym, Trainer $trainer)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
 
-        $gymId   = auth()->user()->gym_id;
-        $currency = auth()->user()->gym?->currency ?? '₹';
+            
+        $currency = $gym?->currency ?? '₹';
 
         // Load schedule with member count
         $trainer->load([
@@ -71,25 +72,25 @@ class TrainerController extends Controller
         $memberIds = $trainer->members->pluck('id');
         $payments  = \App\Models\Payment::with('member', 'invoice')
                         ->whereIn('member_id', $memberIds)
-                        ->where('gym_id', $gymId)
+                        ->where('gym_id', $gym->id)
                         ->where('status', 'success')
                         ->latest('paid_at')
                         ->limit(30)
                         ->get();
 
-        return view('trainers.show', compact('trainer', 'currency', 'payments'));
+        return view('trainers.show', compact('trainer', 'currency', 'payments', 'gym'));
     }
 
-    public function edit(Trainer $trainer)
+    public function edit($gym, Trainer $trainer)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
         $trainer->loadCount('members');
-        return view('trainers.edit', compact('trainer'));
+        return view('trainers.edit', compact('trainer', 'gym'));
     }
 
-    public function update(Request $request, Trainer $trainer)
+    public function update(Request $request, $gym, Trainer $trainer)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
 
         $data = $request->validate([
             'name'             => ['required', 'string', 'max:120'],
@@ -104,6 +105,7 @@ class TrainerController extends Controller
             'status'           => ['required', 'in:active,inactive'],
             'joined_at'        => ['nullable', 'date'],
             'avatar'           => ['nullable', 'image', 'max:2048'],
+            'age'              => ['nullable', 'integer', 'min:0', 'max:120'],
         ]);
 
         if (!empty($data['password'])) {
@@ -124,9 +126,9 @@ class TrainerController extends Controller
         return redirect(gym_route('gym.trainers.index'))->with('success', "Trainer {$trainer->name} updated.");
     }
 
-    public function destroy(Trainer $trainer)
+    public function destroy($gym, Trainer $trainer)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
 
         if ($trainer->avatar) {
             Storage::disk('public')->delete($trainer->avatar);
@@ -139,9 +141,9 @@ class TrainerController extends Controller
 
     // ─── Schedule Management ──────────────────────────────────────────
 
-    public function scheduleStore(Request $request, Trainer $trainer)
+    public function scheduleStore(Request $request, $gym, Trainer $trainer)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
 
         $data = $request->validate([
             'title'       => ['required', 'string', 'max:120'],
@@ -153,7 +155,7 @@ class TrainerController extends Controller
             'notes'       => ['nullable', 'string', 'max:500'],
         ]);
 
-        $data['gym_id']     = auth()->user()->gym_id;
+        $data['gym_id']     = $gym->id;
         $data['trainer_id'] = $trainer->id;
         $data['is_active']  = true;
 
@@ -162,9 +164,9 @@ class TrainerController extends Controller
         return back()->with('success', 'Schedule slot added.');
     }
 
-    public function scheduleDestroy(Trainer $trainer, TrainerSchedule $schedule)
+    public function scheduleDestroy($gym, Trainer $trainer, TrainerSchedule $schedule)
     {
-        abort_if($trainer->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($trainer->gym_id !== $gym->id, 403);
         abort_if($schedule->trainer_id !== $trainer->id, 403);
 
         $schedule->delete();

@@ -12,12 +12,14 @@ class WhatsappService
     private string $token;
     private string $phoneNumberId;
     private string $apiUrl;
+    private bool $logOnly;
 
     public function __construct()
     {
         $this->token         = config('services.whatsapp.token', '');
         $this->phoneNumberId = config('services.whatsapp.phone_number_id', '');
         $this->apiUrl        = config('services.whatsapp.api_url');
+        $this->logOnly       = (bool) config('services.whatsapp.log_only', false);
     }
 
     /**
@@ -26,15 +28,40 @@ class WhatsappService
      */
     public function sendText(string $phone, string $body, ?Member $member = null, string $trigger = 'manual'): ?string
     {
-        if (empty($this->token) || empty($this->phoneNumberId)) {
-            Log::warning('WhatsApp: token or phone_number_id not configured.');
-            return null;
-        }
-
         // Normalize: remove spaces/dashes, ensure + prefix
         $phone = preg_replace('/[\s\-\(\)]/', '', $phone);
         if (!str_starts_with($phone, '+')) {
             $phone = '+91' . ltrim($phone, '0'); // default country code India
+        }
+
+        if ($this->logOnly) {
+            $mockMessageId = 'log_only_' . now()->timestamp . '_' . substr(md5($phone . $body), 0, 8);
+            $this->log(
+                $member,
+                $phone,
+                $body,
+                $trigger,
+                'queued',
+                $mockMessageId,
+                ['mode' => 'log_only', 'note' => 'WhatsApp API call skipped by configuration'],
+                null
+            );
+            return $mockMessageId;
+        }
+
+        if (empty($this->token) || empty($this->phoneNumberId)) {
+            Log::warning('WhatsApp: token or phone_number_id not configured.');
+            $this->log(
+                $member,
+                $phone,
+                $body,
+                $trigger,
+                'failed',
+                null,
+                ['mode' => 'live'],
+                'Missing WhatsApp credentials'
+            );
+            return null;
         }
 
         try {

@@ -11,14 +11,14 @@
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">Exercise Library</h3>
-            <a href="{{ route('workout-activities.create') }}" class="gh-btn gh-btn-primary">+ Add Exercise</a>
+            <a href="{{ gym_route('gym.workout-activities.create') }}" class="gh-btn gh-btn-primary">+ Add Exercise</a>
         </div>
         @if($activities->isEmpty())
         <div class="gh-card-body" style="text-align:center;padding:60px;">
             <div style="font-size:40px;margin-bottom:12px;">🏃</div>
             <h4>No exercises yet</h4>
             <p style="color:#9ca3af;font-size:14px;margin-bottom:16px;">Add exercises to your exercise library.</p>
-            <a href="{{ route('workout-activities.create') }}" class="gh-btn gh-btn-primary">+ Add Exercise</a>
+            <a href="{{ gym_route('gym.workout-activities.create') }}" class="gh-btn gh-btn-primary">+ Add Exercise</a>
         </div>
         @else
         <div class="gh-card-body" style="padding:0;">
@@ -39,8 +39,8 @@
                     </td>
                     <td style="font-size:13px;color:#6b7280;">{{ $act->equipment ?? '—' }}</td>
                     <td>
-                        <a href="{{ route('workout-activities.edit', $act) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
-                        <form method="POST" action="{{ route('workout-activities.destroy', $act) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
+                        <a href="{{ gym_route('gym.workout-activities.edit', [$gym,$act]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                        <form method="POST" action="{{ gym_route('gym.workout-activities.destroy', [$gym,$act]) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
                             @csrf @method('DELETE')
                             <button class="gh-btn gh-btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;">Delete</button>
                         </form>

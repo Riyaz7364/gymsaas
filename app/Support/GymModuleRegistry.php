@@ -71,8 +71,13 @@ class GymModuleRegistry
         if ($plan) {
             $plan->loadMissing('modules');
 
+            $defaultKeys = self::planDefaultKeys($plan->name);
+
             if ($plan->modules->isNotEmpty()) {
-                return $plan->modules->pluck('key')->values()->all();
+                return array_values(array_unique(array_merge(
+                    $plan->modules->pluck('key')->values()->all(),
+                    $defaultKeys
+                )));
             }
 
             $fallbackPlanName ??= $plan->name;

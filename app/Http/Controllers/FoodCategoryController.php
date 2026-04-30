@@ -10,9 +10,9 @@ class FoodCategoryController extends Controller
 {
     public function index()
     {
-        $gymId      = auth()->user()->gym_id;
-        $categories = FoodCategory::where('gym_id', $gymId)->withCount('foodItems')->latest()->paginate(20);
-        return view('food-management.categories.index', compact('categories'));
+        $gym = auth()->user()->gym;
+        $categories = FoodCategory::where('gym_id', $gym->id)->withCount('foodItems')->latest()->paginate(20);
+        return view('food-management.categories.index', compact('categories', 'gym'));
     }
 
     public function create()
@@ -34,13 +34,13 @@ class FoodCategoryController extends Controller
         return redirect(gym_route('gym.food-categories.index'))->with('success', 'Category created successfully.');
     }
 
-    public function edit(FoodCategory $foodCategory)
+    public function edit($gym, FoodCategory $foodCategory)
     {
         abort_if($foodCategory->gym_id !== auth()->user()->gym_id, 403);
-        return view('food-management.categories.edit', compact('foodCategory'));
+        return view('food-management.categories.edit', compact('foodCategory', 'gym'));
     }
 
-    public function update(Request $request, FoodCategory $foodCategory)
+    public function update(Request $request, $gym, FoodCategory $foodCategory)
     {
         abort_if($foodCategory->gym_id !== auth()->user()->gym_id, 403);
 
@@ -55,7 +55,7 @@ class FoodCategoryController extends Controller
         return redirect(gym_route('gym.food-categories.index'))->with('success', 'Category updated successfully.');
     }
 
-    public function destroy(FoodCategory $foodCategory)
+    public function destroy($gym, FoodCategory $foodCategory)
     {
         abort_if($foodCategory->gym_id !== auth()->user()->gym_id, 403);
         $foodCategory->delete();

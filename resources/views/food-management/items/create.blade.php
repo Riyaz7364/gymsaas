@@ -2,11 +2,11 @@
     <x-slot:title>Add Food Item — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>Add Food Item</x-slot:header>
     <x-slot:topbarTitle>Diet & Nutrition</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('food-items.index') }}" style="color:var(--gh-primary);text-decoration:none;">Food & Drinks</a> / Add</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.food-items.index') }}" style="color:var(--gh-primary);text-decoration:none;">Food & Drinks</a> / Add</x-slot:breadcrumb>
 
     <div class="gh-card" style="max-width:600px;">
         <div class="gh-card-body">
-            <form method="POST" action="{{ route('food-items.store') }}">
+            <form method="POST" action="{{ gym_route('gym.food-items.store') }}">
                 @csrf
 
                 <div style="margin-bottom:20px;">
@@ -81,7 +81,7 @@
 
                 <div style="display:flex;gap:12px;">
                     <button type="submit" class="gh-btn gh-btn-primary">Save Food Item</button>
-                    <a href="{{ route('food-items.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                    <a href="{{ gym_route('gym.food-items.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                 </div>
             </form>
         </div>

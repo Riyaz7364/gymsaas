@@ -35,10 +35,12 @@ Route::get('/phpinfo', function () {
     phpinfo();
 })->name('phpinfo');
 
-// Auth
-Route::middleware('guest')->group(function () {
     Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+
+
+// Auth
+Route::middleware('guest')->group(function () {
 
     Route::get('/forgot-password',  [ForgotPasswordController::class, 'showLinkRequestForm'])
          ->name('password.request');
@@ -57,6 +59,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 // WhatsApp Webhook (public — Meta verifies it)
 Route::get('/webhook/whatsapp',  [\App\Http\Controllers\Whatsapp\WhatsappWebhookController::class, 'verify']);
 Route::post('/webhook/whatsapp', [\App\Http\Controllers\Whatsapp\WhatsappWebhookController::class, 'handle']);
+
+// Super Admin routes 
+Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/subscriptions', [\App\Http\Controllers\SuperAdmin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::get('/subscriptions/{subscriber}', [\App\Http\Controllers\SuperAdmin\SubscriptionController::class, 'show'])->name('subscriptions.show');
+    Route::resource('gyms',    \App\Http\Controllers\SuperAdmin\GymController::class);
+    Route::resource('pricing', \App\Http\Controllers\SuperAdmin\PricingController::class);
+    Route::get('/settings',    [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'index'])->name('settings');
+    Route::post('/settings',   [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'update'])->name('settings.update');
+});
+
 
 // Authenticated gym routes with gym access and active checks
 Route::scopeBindings()->middleware(['auth', 'gym.active', 'gym.access'])->prefix('/{gym:slug}')->name('gym.')->group(function () {
@@ -112,7 +126,6 @@ Route::scopeBindings()->middleware(['auth', 'gym.active', 'gym.access'])->prefix
 
     Route::middleware('module:workout_management')->group(function () {
         Route::resource('workout-sequences', \App\Http\Controllers\Workout\WorkoutSequenceController::class);
-        Route::resource('workout-plans', \App\Http\Controllers\Workout\WorkoutPlanController::class);
         Route::resource('workout-activities', \App\Http\Controllers\Workout\WorkoutActivityController::class);
         Route::resource('workout-categories', \App\Http\Controllers\Workout\WorkoutCategoryController::class);
         Route::resource('categories', \App\Http\Controllers\CategoryController::class);
@@ -133,7 +146,11 @@ Route::scopeBindings()->middleware(['auth', 'gym.active', 'gym.access'])->prefix
 
     // AI Workout Plans (premium module)
     Route::middleware(['module:workout_management', 'module:ai_workout_plans'])->group(function () {
-        Route::post('/workout-plans/generate-ai', [\App\Http\Controllers\Workout\WorkoutPlanController::class, 'generateAi'])->name('workout-plans.generate-ai');
+        Route::post('/workout-sequences/generate-ai', [\App\Http\Controllers\Workout\WorkoutSequenceController::class, 'generateAi'])->name('workout-sequences.generate-ai');
+    });
+
+    Route::middleware('module:ai_track_user')->group(function () {
+        Route::get('/ai-track-user', [\App\Http\Controllers\Ai\AiTrackUserController::class, 'index'])->name('ai-track-user.index');
     });
 
     Route::middleware('module:event_management')->group(function () {
@@ -214,15 +231,4 @@ Route::middleware('auth:member')->group(function () {
     Route::post('/member/logout', [\App\Http\Controllers\MemberAuthController::class, 'logout'])->name('member.logout');
     Route::post('/member/scan-qr', [\App\Http\Controllers\MemberAuthController::class, 'scanQr'])->name('member.scan-qr');
     Route::post('/member/review-trainer', [\App\Http\Controllers\MemberAuthController::class, 'submitTrainerReview'])->name('member.review-trainer');
-});
-
-// â”€â”€ Super Admin routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/subscriptions', [\App\Http\Controllers\SuperAdmin\SubscriptionController::class, 'index'])->name('subscriptions.index');
-    Route::get('/subscriptions/{subscriber}', [\App\Http\Controllers\SuperAdmin\SubscriptionController::class, 'show'])->name('subscriptions.show');
-    Route::resource('gyms',    \App\Http\Controllers\SuperAdmin\GymController::class);
-    Route::resource('pricing', \App\Http\Controllers\SuperAdmin\PricingController::class);
-    Route::get('/settings',    [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings',   [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'update'])->name('settings.update');
 });

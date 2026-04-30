@@ -11,7 +11,7 @@
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">All Plans <span style="color:#9ca3af; font-weight:400; font-size:13px;">({{ $plans->count() }})</span></h3>
-            <a href="{{ route('plans.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ New Plan</a>
+            <a href="{{ gym_route('gym.plans.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ New Plan</a>
         </div>
 
         @if($plans->isEmpty())
@@ -19,7 +19,7 @@
             <div style="font-size:40px; margin-bottom:12px;">💳</div>
             <h4 style="font-weight:600; margin-bottom:6px;">No plans yet</h4>
             <p style="color:#9ca3af; font-size:14px; margin-bottom:16px;">Create your first membership plan to start assigning members.</p>
-            <a href="{{ route('plans.create') }}" class="gh-btn gh-btn-primary">+ Create Plan</a>
+            <a href="{{ gym_route('gym.plans.create') }}" class="gh-btn gh-btn-primary">+ Create Plan</a>
         </div>
         @else
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; padding:20px;">
@@ -50,8 +50,8 @@
                         <strong style="color:#374151;">{{ $plan->member_plans_count }}</strong> assignments
                     </div>
                     <div style="display:flex; gap:6px;">
-                        <a href="{{ route('plans.edit', $plan) }}" class="gh-btn gh-btn-outline gh-btn-sm" style="font-size:11px; padding:4px 10px;">Edit</a>
-                        <form method="POST" action="{{ route('plans.destroy', $plan) }}" onsubmit="return confirm('Delete this plan?');" style="margin:0;">
+                        <a href="{{ gym_route('gym.plans.edit', [$gym, $plan]) }}" class="gh-btn gh-btn-outline gh-btn-sm" style="font-size:11px; padding:4px 10px;">Edit</a>
+                        <form method="POST" action="{{ gym_route('gym.plans.destroy', [$gym, $plan]) }}" onsubmit="return confirm('Delete this plan?');" style="margin:0;">
                             @csrf @method('DELETE')
                             <button type="submit" class="gh-btn gh-btn-sm" style="font-size:11px; padding:4px 10px; background:#fee2e2; color:#dc2626; border:none; cursor:pointer; border-radius:6px;">Delete</button>
                         </form>

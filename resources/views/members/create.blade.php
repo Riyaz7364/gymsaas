@@ -2,9 +2,9 @@
     <x-slot:title>Add Member — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>Add Member</x-slot:header>
     <x-slot:topbarTitle>Members</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a> / Add</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a> / Add</x-slot:breadcrumb>
 
-    <form method="POST" action="{{ route('members.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ gym_route('gym.members.store') }}" enctype="multipart/form-data">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 items-start">
@@ -235,7 +235,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                             Add Member
                         </button>
-                        <a href="{{ route('members.index') }}"
+                        <a href="{{ gym_route('gym.members.index') }}"
                            class="gh-btn gh-btn-outline" style="width:100%; justify-content:center; padding:11px; margin-top:10px; display:flex;">
                             Cancel
                         </a>

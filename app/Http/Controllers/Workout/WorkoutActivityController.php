@@ -11,19 +11,20 @@ class WorkoutActivityController extends Controller
 {
     public function index()
     {
-        $gymId      = auth()->user()->gym_id;
-        $activities = WorkoutActivity::where('gym_id', $gymId)
+        $gym = auth()->user()->gym;
+        $activities = WorkoutActivity::where('gym_id', $gym->id)
             ->with('category')
             ->orderBy('name')
             ->paginate(20);
-        return view('workout-activities.index', compact('activities'));
+        return view('workout-activities.index', compact(['activities', 'gym']));
     }
 
     public function create()
     {
-        $gymId      = auth()->user()->gym_id;
+        $gym = auth()->user()->gym;
+        $gymId = $gym->id;
         $categories = WorkoutCategory::where('gym_id', $gymId)->orderBy('name')->get();
-        return view('workout-activities.create', compact('categories'));
+        return view('workout-activities.create', compact(['categories', 'gym']));
     }
 
     public function store(Request $request)
@@ -42,14 +43,15 @@ class WorkoutActivityController extends Controller
         return redirect()->route('workout-activities.index')->with('success', 'Exercise added.');
     }
 
-    public function edit(WorkoutActivity $workoutActivity)
+    public function edit($gym,WorkoutActivity $workoutActivity)
     {
-        $gymId      = auth()->user()->gym_id;
+        $gym = auth()->user()->gym;
+        $gymId = $gym->id;
         $categories = WorkoutCategory::where('gym_id', $gymId)->orderBy('name')->get();
-        return view('workout-activities.edit', ['activity' => $workoutActivity, 'categories' => $categories]);
+        return view('workout-activities.edit', ['activity' => $workoutActivity, 'categories' => $categories, 'gym' => $gym]);
     }
 
-    public function update(Request $request, WorkoutActivity $workoutActivity)
+    public function update(Request $request,$gym, WorkoutActivity $workoutActivity)
     {
         $data = $request->validate([
             'name'         => 'required|string|max:150',

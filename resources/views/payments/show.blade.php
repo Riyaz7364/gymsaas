@@ -79,7 +79,7 @@
                                     <dt class="text-sm font-medium text-gray-500">Member</dt>
                                     <dd class="text-sm text-gray-900">
                                         @if($payment->member)
-                                        <a href="{{ route('members.show', $payment->member) }}" class="text-blue-600 hover:text-blue-800">
+                                        <a href="{{ gym_route('gym.members.show', [$payment->member]) }}" class="text-blue-600 hover:text-blue-800">
                                             {{ $payment->member->name }}
                                         </a>
                                         @else
@@ -131,7 +131,7 @@
                     @endif
 
                     @if($payment->member)
-                    <a href="{{ route('members.show', $payment->member) }}" class="gh-btn gh-btn-outline w-full">
+                    <a href="{{ gym_route('gym.members.show', [$payment->member]) }}" class="gh-btn gh-btn-outline w-full">
                         View Member
                     </a>
                     @endif

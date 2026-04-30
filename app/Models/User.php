@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function ownedGyms(): HasMany
     {
-        return $this->hasMany(Gym::class, 'owner_id');
+        return $this->hasMany(Gym::class);
     }
 
     public function loginHistories()
