@@ -2,7 +2,7 @@
     <x-slot:title>Edit Diet Plan — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>Edit Diet Plan</x-slot:header>
     <x-slot:topbarTitle>Diet & Nutrition</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('diet-plans.index') }}" style="color:var(--gh-primary);text-decoration:none;">Diet Plans</a> / Edit</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.diet-plans.index') }}" style="color:var(--gh-primary);text-decoration:none;">Diet Plans</a> / Edit</x-slot:breadcrumb>
 
     <div style="max-width:700px;">
         <div class="gh-card">
@@ -18,7 +18,7 @@
                 @if($errors->any())
                 <div class="gh-alert gh-alert-danger"><ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>
                 @endif
-                <form method="POST" action="{{ route('diet-plans.update', $dietPlan) }}">
+                <form method="POST" action="{{ gym_route('gym.diet-plans.update', [$gym, $dietPlan]) }}">
                     @csrf @method('PUT')
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                         <div style="grid-column:1/-1;">
@@ -73,7 +73,7 @@
                     {{-- Meals Section --}}
                     <div style="margin-top:24px;border-top:1px solid #e5e7eb;padding-top:24px;">
                         <h4 style="margin:0 0 16px;font-size:16px;font-weight:600;">🍽️ Meals & Nutrition</h4>
-                        <p style="margin:0 0 20px;color:#6b7280;font-size:14px;">Edit meals in this diet plan by selecting from your <a href="{{ route('food-items.index') }}" style="color:var(--gh-primary);" target="_blank">Food & Drinks library</a> or enter manually.</p>
+                        <p style="margin:0 0 20px;color:#6b7280;font-size:14px;">Edit meals in this diet plan by selecting from your <a href="{{ gym_route('gym.food-items.index') }}" style="color:var(--gh-primary);" target="_blank">Food & Drinks library</a> or enter manually.</p>
 
                         <div id="meals-container">
                             @foreach($dietPlan->meals as $index => $meal)
@@ -188,7 +188,7 @@
 
                     <div style="margin-top:24px;display:flex;gap:10px;">
                         <button type="submit" class="gh-btn gh-btn-primary">Save Changes</button>
-                        <a href="{{ route('diet-plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                        <a href="{{ gym_route('gym.diet-plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                     </div>
                 </form>
             </div>

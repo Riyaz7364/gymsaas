@@ -55,13 +55,13 @@ class WorkoutPlanController extends Controller
         return redirect()->route('trainer.workout-plans.index')->with('success', 'Workout plan created.');
     }
 
-    public function edit(WorkoutPlan $workoutPlan)
+    public function edit($gym, WorkoutPlan $workoutPlan)
     {
         $trainer = Auth::guard('trainer')->user();
         abort_if($workoutPlan->gym_id !== $trainer->gym_id || $workoutPlan->trainer_id !== $trainer->id, 403);
 
         $members = $trainer->members()->orderBy('name')->get();
-        return view('trainer.workout-plans.edit', compact('workoutPlan', 'members'));
+        return view('trainer.workout-plans.edit', compact('workoutPlan', 'members', 'gym'));
     }
 
     public function update(Request $request, WorkoutPlan $workoutPlan)

@@ -4,14 +4,10 @@
     <x-slot:topbarTitle>Trainers</x-slot:topbarTitle>
     <x-slot:breadcrumb>Home / Trainers</x-slot:breadcrumb>
 
-    @if(session('success'))
-    <div class="gh-alert gh-alert-success">{{ session('success') }}</div>
-    @endif
-
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">All Trainers <span style="color:#9ca3af; font-weight:400; font-size:13px;">({{ $trainers->count() }})</span></h3>
-            <a href="{{ route('trainers.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Trainer</a>
+            <a href="{{ gym_route('gym.trainers.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Trainer</a>
         </div>
 
         @if($trainers->isEmpty())
@@ -19,7 +15,7 @@
             <div style="font-size:40px; margin-bottom:12px;">🏋️</div>
             <h4 style="font-weight:600; margin-bottom:6px;">No trainers yet</h4>
             <p style="color:#9ca3af; font-size:14px; margin-bottom:16px;">Add your first trainer to get started.</p>
-            <a href="{{ route('trainers.create') }}" class="gh-btn gh-btn-primary">+ Add Trainer</a>
+            <a href="{{ gym_route('gym.trainers.create') }}" class="gh-btn gh-btn-primary">+ Add Trainer</a>
         </div>
         @else
         <div style="padding:0;">
@@ -36,6 +32,7 @@
                 </thead>
                 <tbody>
                     @foreach($trainers as $trainer)
+                  
                     <tr style="border-bottom:1px solid #f3f4f6; transition:background 0.1s;"
                         onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
                         {{-- Name + avatar --}}
@@ -69,15 +66,24 @@
                                 {{ ucfirst($trainer->status) }}
                             </span>
                         </td>
-                        {{-- Actions --}}
+
                         <td style="padding:14px 20px; text-align:right; white-space:nowrap;">
                             <div style="display:inline-flex; gap:6px; align-items:center;">
-                                <a href="{{ route('trainers.show', $trainer) }}" class="gh-btn gh-btn-primary gh-btn-sm" style="font-size:12px;">View</a>
-                                <a href="{{ route('trainers.edit', $trainer) }}" class="gh-btn gh-btn-outline gh-btn-sm" style="font-size:12px;">Edit</a>
-                                <form method="POST" action="{{ route('trainers.destroy', $trainer) }}" onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}?');" style="margin:0;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="gh-btn gh-btn-sm" style="font-size:12px; background:#fee2e2; color:#dc2626; border:none; cursor:pointer; border-radius:6px;">Delete</button>
-                                </form>
+                                <a href="{{ gym_route('gym.trainers.show', [$trainer]) }}" class="gh-btn gh-btn-primary gh-btn-sm" style="font-size:12px;">View</a>
+                                <a href="{{ gym_route('gym.trainers.edit', [$trainer]) }}" class="gh-btn gh-btn-outline gh-btn-sm" style="font-size:12px;">Edit</a>
+                                <button type="button"
+                                        onclick="Livewire.dispatch('open-delete-dialog', {{
+                                            json_encode([
+                                                'title' => 'Remove Trainer',
+                                                'message' => 'Are you sure you want to remove this trainer? This action cannot be undone.',
+                                                'itemName' => $trainer->name,
+                                                'confirmText' => 'Remove',
+                                                'cancelText' => 'Cancel',
+                                                'formAction' => gym_route('gym.trainers.destroy', [$trainer])
+                                            ])
+                                        }})"
+                                        class="gh-btn gh-btn-sm"
+                                        style="font-size:12px; background:#fee2e2; color:#dc2626; border:none; cursor:pointer; border-radius:6px;">Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -87,5 +93,7 @@
         </div>
         @endif
     </div>
-</x-layouts.app>
 
+    {{-- Reusable Delete Dialog Component --}}
+    @livewire('delete-dialog')
+</x-layouts.app>

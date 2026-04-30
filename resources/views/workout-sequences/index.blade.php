@@ -10,10 +10,33 @@
     </div>
     @endif
 
+    @if($showAiGenerator ?? false)
+    <div class="gh-card" style="margin-bottom:16px;">
+        <div class="gh-card-header">
+            <h3 class="gh-card-title">AI Workout Generator</h3>
+        </div>
+        <div class="gh-card-body">
+            <form method="POST" action="{{ url('/' . auth()->user()->gym->slug . '/workout-sequences/generate-ai') }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+                @csrf
+                <div style="min-width:280px;">
+                    <label class="gh-label">Select Member</label>
+                    <select name="member_id" class="gh-input" required>
+                        <option value="">-- Choose member --</option>
+                        @foreach($membersForAi as $member)
+                        <option value="{{ $member->id }}">{{ $member->name }} ({{ str_replace('_', ' ', $member->goal ?? 'maintain') }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="gh-btn gh-btn-primary">Generate AI Workout Plan</button>
+            </form>
+        </div>
+    </div>
+    @endif
+
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">Workout Sequences</h3>
-            <a href="{{ route('workout-sequences.create') }}" class="gh-btn gh-btn-primary">+ New Sequence</a>
+            <a href="{{ gym_route('gym.workout-sequences.create') }}" class="gh-btn gh-btn-primary">+ New Sequence</a>
         </div>
         <div class="gh-card-body" style="padding:0;">
             @forelse($sequences as $sequence)
@@ -44,8 +67,8 @@
                     @endif
                 </div>
                 <div style="text-align:right; display:flex; gap:6px; justify-content:flex-end;">
-                    <a href="{{ route('workout-sequences.edit', $sequence) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
-                    <form method="POST" action="{{ route('workout-sequences.destroy', $sequence) }}" style="display:inline;" onsubmit="return confirm('Delete sequence? Members using it will be unaffected.');">
+                    <a href="{{ gym_route('gym.workout-sequences.edit', [$sequence]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                    <form method="POST" action="{{ gym_route('gym.workout-sequences.destroy', $sequence) }}" style="display:inline;" onsubmit="return confirm('Delete sequence? Members using it will be unaffected.');">
                         @csrf @method('DELETE')
                         <button class="gh-btn gh-btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;">Delete</button>
                     </form>
@@ -55,7 +78,7 @@
             <div style="padding:40px 18px; text-align:center;">
                 <div style="font-size:36px; margin-bottom:12px;">🏋️</div>
                 <p style="color:#9ca3af; margin-bottom:12px;">No sequences created yet</p>
-                <a href="{{ route('workout-sequences.create') }}" class="gh-btn gh-btn-primary">Create First Sequence</a>
+                <a href="{{ gym_route('gym.workout-sequences.create') }}" class="gh-btn gh-btn-primary">Create First Sequence</a>
             </div>
             @endforelse
         </div>

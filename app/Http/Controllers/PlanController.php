@@ -9,12 +9,13 @@ class PlanController extends Controller
 {
     public function index()
     {
+        $gym = auth()->user()->gym;
         $plans = Plan::withCount('memberPlans')
-            ->where('gym_id', auth()->user()->gym_id)
+            ->where('gym_id', $gym->id)
             ->orderBy('price')
             ->get();
-
-        return view('plans.index', compact('plans'));
+        
+        return view('plans.index', compact(['plans', 'gym']));
     }
 
     public function create()
@@ -52,10 +53,10 @@ class PlanController extends Controller
         return redirect(gym_route('gym.plans.index'))->with('success', "Plan \"{$data['name']}\" created.");
     }
 
-    public function show(Plan $plan)
+    public function show($gym ,Plan $plan)
     {
         abort_if($plan->gym_id !== auth()->user()->gym_id, 403);
-        return redirect(gym_route('gym.plans.edit', [$plan]));
+        return redirect(gym_route('gym.plans.edit', [$gym, $plan]));
     }
 
     public function edit(Plan $plan)
@@ -64,7 +65,7 @@ class PlanController extends Controller
         return view('plans.edit', compact('plan'));
     }
 
-    public function update(Request $request, Plan $plan)
+    public function update(Request $request,$gym, Plan $plan)
     {
         abort_if($plan->gym_id !== auth()->user()->gym_id, 403);
 

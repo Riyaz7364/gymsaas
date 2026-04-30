@@ -3,7 +3,7 @@
     <x-slot:header>Add Trainer</x-slot:header>
     <x-slot:topbarTitle>Trainers</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / Add
+        Home / <a href="{{ gym_route('gym.trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / Add
     </x-slot:breadcrumb>
 
     <div style="display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; max-width:1000px;">
@@ -11,7 +11,7 @@
         <div class="gh-card">
             <div class="gh-card-header">
                 <h3 class="gh-card-title">Trainer Info</h3>
-                <a href="{{ route('trainers.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
+                <a href="{{ gym_route('gym.trainers.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
             </div>
             <div class="gh-card-body">
 
@@ -19,7 +19,7 @@
                 <div class="gh-alert gh-alert-danger" style="margin-bottom:16px;">{{ $errors->first() }}</div>
                 @endif
 
-                <form method="POST" action="{{ route('trainers.store') }}" enctype="multipart/form-data" id="trainerForm">
+                <form method="POST" action="{{ gym_route('gym.trainers.store') }}" enctype="multipart/form-data" id="trainerForm">
                     @csrf
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -96,7 +96,7 @@
             <div class="gh-card-body" style="text-align:center;" x-data="avatarPreview()">
                 <label for="avatarInput" style="cursor:pointer;">
                     <img :src="preview || 'https://ui-avatars.com/api/?name=Trainer&color=fff&background=0abf8e&size=100&bold=true'"
-                         style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; margin-bottom:12px;">
+                         style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; margin-bottom:12px; place-self:center;" alt="Click to upload">
                 </label>
                 <div style="font-size:12px; color:#9ca3af; margin-bottom:12px;">Click photo to change</div>
                 <input type="file" id="avatarInput" name="avatar" form="trainerForm"

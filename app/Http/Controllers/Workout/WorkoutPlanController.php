@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WorkoutPlan;
 use App\Models\Member;
 use App\Models\Trainer;
+use App\Services\AiPlanGenerationService;
 use Illuminate\Http\Request;
 
 class WorkoutPlanController extends Controller
@@ -13,11 +14,16 @@ class WorkoutPlanController extends Controller
     public function index()
     {
         $gymId = auth()->user()->gym_id;
+        $showAiGenerator = auth()->user()->gymHasModule('ai_workout_plans');
+        $membersForAi = $showAiGenerator
+            ? Member::where('gym_id', $gymId)->where('status', 'active')->orderBy('name')->get(['id', 'name', 'goal'])
+            : collect();
+
         $plans = WorkoutPlan::where('gym_id', $gymId)
             ->with(['member', 'trainer'])
             ->latest()
             ->paginate(20);
-        return view('workout-plans.index', compact('plans'));
+        return view('workout-plans.index', compact('plans', 'showAiGenerator', 'membersForAi'));
     }
 
     public function create()
@@ -42,15 +48,15 @@ class WorkoutPlanController extends Controller
         $data['is_default'] = $request->boolean('is_default');
         $data['is_active']  = $request->boolean('is_active');
         WorkoutPlan::create($data);
-        return redirect()->route('workout-plans.index')->with('success', 'Workout plan created.');
+        return redirect(gym_route('gym.workout-plans.index'))->with('success', 'Workout plan created.');
     }
 
-    public function edit(WorkoutPlan $workoutPlan)
+    public function edit($gym, WorkoutPlan $workoutPlan)
     {
-        $gymId    = auth()->user()->gym_id;
+        $gymId    = $gym->id;
         $members  = Member::where('gym_id', $gymId)->orderBy('name')->get();
         $trainers = Trainer::where('gym_id', $gymId)->where('status', 'active')->orderBy('name')->get();
-        return view('workout-plans.edit', ['plan' => $workoutPlan, 'members' => $members, 'trainers' => $trainers]);
+        return view('workout-plans.edit', ['plan' => $workoutPlan, 'members' => $members, 'trainers' => $trainers, 'gym' => $gym]);
     }
 
     public function update(Request $request, WorkoutPlan $workoutPlan)
@@ -66,12 +72,26 @@ class WorkoutPlanController extends Controller
         $data['is_default'] = $request->boolean('is_default');
         $data['is_active']  = $request->boolean('is_active');
         $workoutPlan->update($data);
-        return redirect()->route('workout-plans.index')->with('success', 'Workout plan updated.');
+        return redirect(gym_route('gym.workout-plans.index'))->with('success', 'Workout plan updated.');
     }
 
     public function destroy(WorkoutPlan $workoutPlan)
     {
         $workoutPlan->delete();
-        return redirect()->route('workout-plans.index')->with('success', 'Workout plan deleted.');
+        return redirect(gym_route('gym.workout-plans.index'))->with('success', 'Workout plan deleted.');
+    }
+
+    public function generateAi(Request $request, AiPlanGenerationService $aiPlanGeneration)
+    {
+        $gymId = auth()->user()->gym_id;
+        $data = $request->validate([
+            'member_id' => 'required|integer|exists:members,id',
+        ]);
+
+        $member = Member::where('gym_id', $gymId)->findOrFail($data['member_id']);
+        $plan = $aiPlanGeneration->generateWorkoutPlan($member);
+
+        return redirect(gym_route('gym.workout-plans.edit', [$plan]))
+            ->with('success', "AI workout plan generated for {$member->name}.");
     }
 }

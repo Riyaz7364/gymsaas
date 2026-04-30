@@ -28,7 +28,7 @@
         <div class="gh-card-header">
             <h3 class="gh-card-title">Personal Trainer</h3>
             <div style="display:flex; gap:8px; align-items:center;">
-                <a href="{{ route('trainers.show', $trainer) }}" class="gh-btn gh-btn-outline gh-btn-sm">View Profile →</a>
+                <a href="{{ gym_route('gym.trainers.show', [$gym, $trainer]) }}" class="gh-btn gh-btn-outline gh-btn-sm">View Profile →</a>
                 <button wire:click="removeTrainer"
                         wire:confirm="Remove the assigned trainer and all their schedule slots for this member?"
                         wire:loading.attr="disabled"
@@ -173,7 +173,7 @@
         <div class="gh-card-header">
             <h3 class="gh-card-title">{{ $trainer ? 'Change Trainer / Schedule' : 'Assign Trainer & Schedule' }}</h3>
             @if($allTrainers->count() === 0)
-            <a href="{{ route('trainers.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Trainer</a>
+            <a href="{{ gym_route('gym.trainers.create') }}" class="gh-btn gh-btn-primary gh-btn-sm">+ Add Trainer</a>
             @endif
         </div>
         <div class="gh-card-body">
@@ -215,7 +215,7 @@
                                     <strong>Go to their profile to add slots and set pricing.</strong>
                                 </div>
                                 @if($trainer)
-                                <a href="{{ route('trainers.show', $trainer) }}"
+                                <a href="{{ gym_route('gym.trainers.show', [$gym, $trainer]) }}"
                                    style="background:#d97706; color:#fff; padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; white-space:nowrap;">
                                     Add Slots →
                                 </a>
@@ -271,9 +271,7 @@
                         Saving…
                     </span>
                 </button>
-            </form>
-            @else
-            <p style="color:#9ca3af; font-size:13px;">No trainers available. <a href="{{ route('trainers.create') }}" style="color:var(--gh-primary);">Add a trainer</a></p>
+            <p style="color:#9ca3af; font-size:13px;">No trainers available. <a href="{{ gym_route('gym.trainers.create') }}" style="color:var(--gh-primary);">Add a trainer</a></p>
             @endif
         </div>
     </div>

@@ -19,9 +19,9 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
-        $gymId = auth()->user()->gym_id;
+        $gym = auth()->user()->gym;
 
-        $query = Member::where('gym_id', $gymId)->with('activePlan.plan');
+        $query = Member::where('gym_id', $gym->id)->with('activePlan.plan');
 
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
@@ -43,14 +43,14 @@ class MemberController extends Controller
         $members = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
         $counts = [
-            'all'      => Member::where('gym_id', $gymId)->count(),
-            'active'   => Member::where('gym_id', $gymId)->where('status', 'active')->count(),
-            'inactive' => Member::where('gym_id', $gymId)->where('status', 'inactive')->count(),
-            'frozen'   => Member::where('gym_id', $gymId)->where('status', 'frozen')->count(),
-            'expired'  => Member::where('gym_id', $gymId)->where('status', 'expired')->count(),
+            'all'      => Member::where('gym_id', $gym->id)->count(),
+            'active'   => Member::where('gym_id', $gym->id)->where('status', 'active')->count(),
+            'inactive' => Member::where('gym_id', $gym->id)->where('status', 'inactive')->count(),
+            'frozen'   => Member::where('gym_id', $gym->id)->where('status', 'frozen')->count(),
+            'expired'  => Member::where('gym_id', $gym->id)->where('status', 'expired')->count(),
         ];
 
-        return view('members.index', compact('members', 'counts'));
+        return view('members.index', compact('members', 'counts', 'gym'));
     }
 
     public function create()
@@ -153,7 +153,7 @@ class MemberController extends Controller
                          ->with('success', "Member {$member->name} added successfully.");
     }
 
-    public function show(Member $member)
+    public function show($gym, Member $member)
     {
         $this->authorizeGym($member);
         $gymId = auth()->user()->gym_id;
@@ -184,7 +184,7 @@ class MemberController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        return view('members.show', compact('member', 'attendanceCount', 'allTrainers', 'allDietPlans', 'allTrainerSchedules'));
+        return view('members.show', compact('member', 'attendanceCount', 'allTrainers', 'allDietPlans', 'allTrainerSchedules', 'gym'));
     }
 
     public function edit(Member $member)

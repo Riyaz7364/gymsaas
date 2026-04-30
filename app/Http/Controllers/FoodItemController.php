@@ -10,9 +10,9 @@ class FoodItemController extends Controller
 {
     public function index()
     {
-        $gymId       = auth()->user()->gym_id;
-        $categories  = FoodCategory::where('gym_id', $gymId)->orderBy('name')->get();
-        $query       = FoodItem::where('gym_id', $gymId)->with('category');
+        $gym = auth()->user()->gym;
+        $categories  = FoodCategory::where('gym_id', $gym->id)->orderBy('name')->get();
+        $query       = FoodItem::where('gym_id', $gym->id)->with('category');
 
         if (request('category')) {
             $query->where('category_id', request('category'));
@@ -20,14 +20,15 @@ class FoodItemController extends Controller
 
         $foodItems = $query->latest()->paginate(20);
 
-        return view('food-management.items.index', compact('foodItems', 'categories'));
+        return view('food-management.items.index', compact('foodItems', 'categories', 'gym'));
     }
 
     public function create()
     {
-        $gymId      = auth()->user()->gym_id;
+        $gym = auth()->user()->gym;
+        $gymId      = $gym->id;
         $categories = FoodCategory::where('gym_id', $gymId)->orderBy('name')->get();
-        return view('food-management.items.create', compact('categories'));
+        return view('food-management.items.create', compact('categories', 'gym'));
     }
 
     public function store(Request $request)
@@ -55,17 +56,17 @@ class FoodItemController extends Controller
         return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item created successfully.');
     }
 
-    public function edit(FoodItem $foodItem)
+    public function edit($gym, FoodItem $foodItem)
     {
-        abort_if($foodItem->gym_id !== auth()->user()->gym_id, 403);
-        $gymId      = auth()->user()->gym_id;
+        abort_if($foodItem->gym_id !== $gym->id, 403);
+        $gymId      = $gym->id;
         $categories = FoodCategory::where('gym_id', $gymId)->orderBy('name')->get();
-        return view('food-management.items.edit', compact('foodItem', 'categories'));
+        return view('food-management.items.edit', compact('foodItem', 'categories', 'gym'));
     }
 
-    public function update(Request $request, FoodItem $foodItem)
+    public function update(Request $request, $gym, FoodItem $foodItem)
     {
-        abort_if($foodItem->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($foodItem->gym_id !== $gym->id, 403);
 
         $data = $request->validate([
             'category_id' => 'required|exists:food_categories,id',
@@ -81,16 +82,16 @@ class FoodItemController extends Controller
 
         // Verify category belongs to gym
         $category = FoodCategory::find($data['category_id']);
-        abort_if($category->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($category->gym_id !== $gym->id, 403);
 
         $foodItem->update($data);
 
         return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item updated successfully.');
     }
 
-    public function destroy(FoodItem $foodItem)
+    public function destroy($gym, FoodItem $foodItem)
     {
-        abort_if($foodItem->gym_id !== auth()->user()->gym_id, 403);
+        abort_if($foodItem->gym_id !== $gym->id, 403);
         $foodItem->delete();
         return redirect(gym_route('gym.food-items.index'))->with('success', 'Food item deleted successfully.');
     }

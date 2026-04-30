@@ -8,6 +8,29 @@
     <div class="gh-alert gh-alert-success">{{ session('success') }}</div>
     @endif
 
+    @if($showAiGenerator ?? false)
+    <div class="gh-card" style="margin-bottom:16px;">
+        <div class="gh-card-header">
+            <h3 class="gh-card-title">AI Workout Generator</h3>
+        </div>
+        <div class="gh-card-body">
+            <form method="POST" action="{{ gym_route('gym.workout-plans.generate-ai') }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+                @csrf
+                <div style="min-width:280px;">
+                    <label class="gh-label">Select Member</label>
+                    <select name="member_id" class="gh-input" required>
+                        <option value="">-- Choose member --</option>
+                        @foreach($membersForAi as $member)
+                        <option value="{{ $member->id }}">{{ $member->name }} ({{ str_replace('_', ' ', $member->goal ?? 'maintain') }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="gh-btn gh-btn-primary">Generate AI Workout Plan</button>
+            </form>
+        </div>
+    </div>
+    @endif
+
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">Workout Plans</h3>

@@ -3,8 +3,8 @@
     <x-slot:header>Membership Plans</x-slot:header>
     <x-slot:topbarTitle>Members</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a>
-        / <a href="{{ route('members.show', $member) }}" style="color:var(--gh-primary);text-decoration:none;">{{ $member->name }}</a>
+        Home / <a href="{{ gym_route('gym.members.index') }}" style="color:var(--gh-primary);text-decoration:none;">Members</a>
+        / <a href="{{ gym_route('gym.members.show', [$member]) }}" style="color:var(--gh-primary);text-decoration:none;">{{ $member->name }}</a>
         / Plans
     </x-slot:breadcrumb>
 
@@ -15,7 +15,7 @@
             <div class="gh-card">
                 <div class="gh-card-header">
                     <h3 class="gh-card-title">Plan History</h3>
-                    <a href="{{ route('members.show', $member) }}" class="gh-btn gh-btn-outline gh-btn-sm">← Member Profile</a>
+                    <a href="{{ gym_route('gym.members.show', [$member]) }}" class="gh-btn gh-btn-outline gh-btn-sm">← Member Profile</a>
                 </div>
                 <div class="gh-card-body" style="padding:0;">
                     <table class="gh-table">
@@ -82,7 +82,7 @@
                     <div class="gh-alert gh-alert-danger" style="margin-bottom:16px;">{{ $errors->first() }}</div>
                     @endif
 
-                    <form method="POST" action="{{ route('members.plans.assign', $member) }}">
+                    <form method="POST" action="{{ gym_route('gym.members.plans.assign', [$member]) }}">
                         @csrf
 
                         <div class="gh-form-group">

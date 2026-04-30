@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\DietPlan;
 use App\Models\Member;
 use App\Models\FoodItem;
+use App\Services\AiPlanGenerationService;
 use Illuminate\Http\Request;
 
 class DietPlanController extends Controller
 {
     public function index()
     {
-        $gymId = auth()->user()->gym_id;
-        $query = DietPlan::where('gym_id', $gymId)->with('member')->latest();
+        $gym = auth()->user()->gym;
+        $query = DietPlan::where('gym_id', $gym->id)->with('member')->latest();
         $showAiPlans = auth()->user()->gymHasModule('ai_diet_plans');
+        $membersForAi = $showAiPlans
+            ? Member::where('gym_id', $gym->id)->where('status', 'active')->orderBy('name')->get(['id', 'name', 'goal'])
+            : collect();
 
         $type = request('type', 'ai');
 
@@ -26,15 +30,15 @@ class DietPlanController extends Controller
         }
 
         $plans = $query->paginate(20);
-        return view('diet-plans.index', compact('plans', 'showAiPlans'));
+        return view('diet-plans.index', compact('plans', 'showAiPlans', 'membersForAi','gym'));
     }
 
     public function create()
     {
-        $gymId   = auth()->user()->gym_id;
-        $members = Member::where('gym_id', $gymId)->orderBy('name')->get();
-        $foodItems = FoodItem::where('gym_id', $gymId)->with('category')->orderBy('name')->get();
-        return view('diet-plans.create', compact('members', 'foodItems'));
+        $gym = auth()->user()->gym;
+        $members = Member::where('gym_id', $gym->id)->orderBy('name')->get();
+        $foodItems = FoodItem::where('gym_id', $gym->id)->with('category')->orderBy('name')->get();
+        return view('diet-plans.create', compact('members', 'foodItems', 'gym'));
     }
 
     public function store(Request $request)
@@ -137,15 +141,15 @@ class DietPlanController extends Controller
         return redirect(gym_route('gym.diet-plans.index'))->with('success', 'Diet plan created successfully.');
     }
 
-    public function edit(DietPlan $dietPlan)
+    public function edit($gym,DietPlan $dietPlan)
     {
-        $gymId   = auth()->user()->gym_id;
-        $members = Member::where('gym_id', $gymId)->orderBy('name')->get();
-        $foodItems = FoodItem::where('gym_id', $gymId)->with('category')->orderBy('name')->get();
-        return view('diet-plans.edit', compact('dietPlan', 'members', 'foodItems'));
+        $gym   = auth()->user()->gym;
+        $members = Member::where('gym_id', $gym->id)->orderBy('name')->get();
+        $foodItems = FoodItem::where('gym_id', $gym->id)->with('category')->orderBy('name')->get();
+        return view('diet-plans.edit', compact('dietPlan', 'members', 'foodItems', 'gym'));
     }
 
-    public function update(Request $request, DietPlan $dietPlan)
+    public function update(Request $request,$gym, DietPlan $dietPlan)
     {
         $data = $request->validate([
             'name'        => 'required|string|max:150',
@@ -311,10 +315,18 @@ class DietPlanController extends Controller
         return back()->with('success', 'Meal removed.');
     }
 
-    public function generateAi(DietPlan $dietPlan)
+    public function generateAi(Request $request, AiPlanGenerationService $aiPlanGeneration)
     {
-        // AI generation stub — implement when AI service is configured
-        return redirect(gym_route('gym.diet-plans.edit', [$dietPlan]))
-            ->with('info', 'AI generation coming soon.');
+        $gymId = auth()->user()->gym_id;
+        $data = $request->validate([
+            'member_id' => 'required|integer|exists:members,id',
+        ]);
+
+        $member = Member::where('gym_id', $gymId)->findOrFail($data['member_id']);
+        $plan = $aiPlanGeneration->generateDietPlan($member, auth()->id());
+
+        return redirect(gym_route('gym.diet-plans.edit', [$plan]))
+            ->with('success', "AI diet plan generated for {$member->name}.");
     }
 }
+

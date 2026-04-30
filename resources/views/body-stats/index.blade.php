@@ -11,14 +11,14 @@
     <div class="gh-card">
         <div class="gh-card-header">
             <h3 class="gh-card-title">Body Measurements</h3>
-            <a href="{{ route('body-stats.create') }}" class="gh-btn gh-btn-primary">+ Record Stats</a>
+            <a href="{{ gym_route('gym.body-stats.create') }}" class="gh-btn gh-btn-primary">+ Record Stats</a>
         </div>
         @if($stats->isEmpty())
         <div class="gh-card-body" style="text-align:center;padding:60px;">
             <div style="font-size:40px;margin-bottom:12px;">📊</div>
             <h4>No body stats recorded</h4>
             <p style="color:#9ca3af;font-size:14px;margin-bottom:16px;">Track member body measurements over time.</p>
-            <a href="{{ route('body-stats.create') }}" class="gh-btn gh-btn-primary">+ Record Stats</a>
+            <a href="{{ gym_route('gym.body-stats.create') }}" class="gh-btn gh-btn-primary">+ Record Stats</a>
         </div>
         @else
         <div class="gh-card-body" style="padding:0;">
@@ -39,8 +39,8 @@
                     </td>
                     <td>{{ $stat->body_fat_pct ? $stat->body_fat_pct.'%' : '—' }}</td>
                     <td>
-                        <a href="{{ route('body-stats.edit', $stat) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
-                        <form method="POST" action="{{ route('body-stats.destroy', $stat) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
+                        <a href="{{ gym_route('gym.body-stats.edit', [$stat]) }}" class="gh-btn gh-btn-outline gh-btn-sm">Edit</a>
+                        <form method="POST" action="{{ gym_route('gym.body-stats.destroy', [$stat]) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
                             @csrf @method('DELETE')
                             <button class="gh-btn gh-btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;">Delete</button>
                         </form>

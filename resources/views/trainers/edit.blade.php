@@ -3,7 +3,7 @@
     <x-slot:header>Edit Trainer</x-slot:header>
     <x-slot:topbarTitle>Trainers</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / {{ $trainer->name }}
+        Home / <a href="{{ gym_route('gym.trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / {{ $trainer->name }}
     </x-slot:breadcrumb>
 
     <div style="display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; max-width:1000px;">
@@ -11,7 +11,7 @@
         <div class="gh-card">
             <div class="gh-card-header">
                 <h3 class="gh-card-title">{{ $trainer->name }}</h3>
-                <a href="{{ route('trainers.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
+                <a href="{{ gym_route('gym.trainers.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
             </div>
             <div class="gh-card-body">
 
@@ -22,7 +22,7 @@
                 <div class="gh-alert gh-alert-success" style="margin-bottom:16px;">{{ session('success') }}</div>
                 @endif
 
-                <form method="POST" action="{{ route('trainers.update', $trainer) }}" enctype="multipart/form-data" id="trainerForm">
+                <form method="POST" action="{{ gym_route('gym.trainers.update', [$trainer]) }}" enctype="multipart/form-data" id="trainerForm">
                     @csrf @method('PUT')
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -90,10 +90,7 @@
 
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <button type="submit" class="gh-btn gh-btn-primary">Save Changes</button>
-                        <form method="POST" action="{{ route('trainers.destroy', $trainer) }}" onsubmit="return confirm('Remove this trainer?');" style="margin:0;">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="gh-btn" style="background:#fee2e2; color:#dc2626; border:none; cursor:pointer; border-radius:6px; padding:9px 16px; font-size:13px; font-weight:500;">Delete Trainer</button>
-                        </form>
+               
                     </div>
                 </form>
             </div>
@@ -102,7 +99,7 @@
         {{-- Avatar --}}
         <div class="gh-card">
             <div class="gh-card-header"><h3 class="gh-card-title">Profile Photo</h3></div>
-            <div class="gh-card-body" style="text-align:center;" x-data="avatarPreview('{{ $trainer->avatar ? asset('storage/'.$trainer->avatar) : '' }}')">
+            <div class="gh-card-body justify-items-center" style="text-align:center;" x-data="avatarPreview('{{ $trainer->avatar ? asset('storage/'.$trainer->avatar) : '' }}')">
                 <label for="avatarInput" style="cursor:pointer; display:block;">
                     <img :src="preview || '{{ $trainer->avatar ? asset('storage/'.$trainer->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($trainer->name).'&color=fff&background=0abf8e&size=100&bold=true' }}'"
                          style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; margin-bottom:12px;">

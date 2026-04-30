@@ -2,7 +2,7 @@
     <x-slot:title>{{ isset($workoutSequence) ? 'Edit' : 'Create' }} Workout Sequence — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>{{ isset($workoutSequence) ? 'Edit' : 'Create' }} Workout Sequence</x-slot:header>
     <x-slot:topbarTitle>{{ isset($workoutSequence) ? 'Edit' : 'Create' }} Sequence</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('workout-sequences.index') }}">Sequences</a> / {{ isset($workoutSequence) ? 'Edit' : 'Create' }}</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.workout-sequences.index') }}">Sequences</a> / {{ isset($workoutSequence) ? 'Edit' : 'Create' }}</x-slot:breadcrumb>
 
     <div class="gh-card" style="max-width:900px;">
         <div class="gh-card-header"><h3 class="gh-card-title">{{ isset($workoutSequence) ? 'Edit' : 'New' }} Sequence</h3></div>
@@ -17,7 +17,7 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ isset($workoutSequence) ? route('workout-sequences.update', $workoutSequence) : route('workout-sequences.store') }}" x-data="sequenceForm()">
+            <form method="POST" action="{{ isset($workoutSequence) ? gym_route('gym.workout-sequences.update', [$workoutSequence]) : gym_route('gym.workout-sequences.store') }}" x-data="sequenceForm()">
                 @csrf
                 @if(isset($workoutSequence))
                 @method('PUT')
@@ -75,20 +75,20 @@
                             </div>
                         </div>
 
-                        <input type="hidden" :name="`days.${index}.color`" :value="day.color">
-                        <input type="hidden" :name="`days.${index}.bg`" :value="day.bg">
-                        <input type="hidden" :name="`days.${index}.border`" :value="getLightBorder(day.color)">
+                        <input type="hidden" :name="`days[${index}][color]`" :value="day.color">
+                        <input type="hidden" :name="`days[${index}][bg]`" :value="day.bg">
+                        <input type="hidden" :name="`days[${index}][border]`" :value="getLightBorder(day.color)">
 
                         <div style="display:grid; grid-template-columns:1.5fr 150px 80px; gap:12px; margin-bottom:16px;">
                             <div>
                                 <label class="gh-label">Label *</label>
-                                <input type="text" :name="`days.${index}.label`" class="gh-input" 
+                                <input type="text" :name="`days[${index}][label]`" class="gh-input" 
                                        x-model="day.label" 
                                        placeholder="e.g., Chest Day" required>
                             </div>
                             <div>
                                 <label class="gh-label">Icon</label>
-                                <input type="text" :name="`days.${index}.icon`" class="gh-input" 
+                                <input type="text" :name="`days[${index}][icon]`" class="gh-input" 
                                        x-model="day.icon" 
                                        placeholder="e.g., 💪" 
                                        maxlength="3">
@@ -97,11 +97,13 @@
 
                         <div style="margin-bottom:16px;">
                             <label class="gh-label">Muscle Groups</label>
-                            <input type="text" :name="`days.${index}.muscle_groups_text`" class="gh-input" 
+                            <input type="text" :name="`days_ui[${index}][muscle_groups_text]`" class="gh-input" 
                                    placeholder="e.g., Chest, Triceps (comma-separated)"
                                    @input="updateMuscleGroups(index)"
                                    :value="day.muscle_groups.join(', ')">
-                            <input type="hidden" :name="`days.${index}.muscle_groups`" x-model="JSON.stringify(day.muscle_groups)">
+                            <template x-for="(mg, mgIndex) in day.muscle_groups" :key="`mg-${index}-${mgIndex}`">
+                                <input type="hidden" :name="`days[${index}][muscle_groups][${mgIndex}]`" :value="mg">
+                            </template>
                         </div>
 
                         <div>
@@ -109,7 +111,7 @@
                             <div style="display:flex; flex-direction:column; gap:8px;">
                                 <template x-for="(exercise, exIndex) in day.exercises" :key="exIndex">
                                     <div style="display:flex; gap:8px;">
-                                        <select :name="`days.${index}.exercises.${exIndex}`" class="gh-input"
+                                        <select :name="`days[${index}][exercises][${exIndex}]`" class="gh-input"
                                                 x-model="day.exercises[exIndex]">
                                             <option value="">— Select Activity —</option>
                                             @foreach($activities as $activity)
@@ -129,7 +131,7 @@
 
                 <div style="margin-top:24px; display:flex; gap:10px;">
                     <button type="submit" class="gh-btn gh-btn-primary">{{ isset($workoutSequence) ? 'Update' : 'Create' }} Sequence</button>
-                    <a href="{{ route('workout-sequences.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                    <a href="{{ gym_route('gym.workout-sequences.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                 </div>
             </form>
         </div>
@@ -183,7 +185,7 @@
                     }
                 },
                 updateMuscleGroups(index) {
-                    const input = document.querySelector(`input[name="days.${index}.muscle_groups_text"]`);
+                    const input = document.querySelector(`input[name="days_ui[${index}][muscle_groups_text]"]`);
                     if (input) {
                         this.days[index].muscle_groups = input.value
                             .split(',')

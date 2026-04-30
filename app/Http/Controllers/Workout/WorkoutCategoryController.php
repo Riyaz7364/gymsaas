@@ -10,9 +10,9 @@ class WorkoutCategoryController extends Controller
 {
     public function index()
     {
-        $gymId      = auth()->user()->gym_id;
-        $categories = WorkoutCategory::where('gym_id', $gymId)->withCount('activities')->orderBy('name')->paginate(20);
-        return view('workout-categories.index', compact('categories'));
+        $gym = auth()->user()->gym;
+        $categories = WorkoutCategory::where('gym_id', $gym->id)->withCount('activities')->orderBy('name')->paginate(20);
+        return view('workout-categories.index', compact('categories', 'gym'));
     }
 
     public function create() { return view('workout-categories.create'); }
@@ -25,28 +25,26 @@ class WorkoutCategoryController extends Controller
         return redirect()->route('workout-categories.index')->with('success', 'Category created.');
     }
 
-    public function show(string $id) { return redirect()->route('workout-categories.index'); }
+    public function show($gym,string $id) { return redirect()->route('workout-categories.index'); }
 
-    public function edit(string $id)
+    public function edit($gym, string $id)
     {
-        $gymId    = auth()->user()->gym_id;
-        $category = WorkoutCategory::where('gym_id', $gymId)->findOrFail($id);
-        return view('workout-categories.edit', compact('category'));
+        $category = WorkoutCategory::where('gym_id', $gym->id)->findOrFail($id);
+        return view('workout-categories.edit', compact(['category', 'gym']));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $gym, string $id)
     {
-        $gymId    = auth()->user()->gym_id;
-        $category = WorkoutCategory::where('gym_id', $gymId)->findOrFail($id);
+        $category = WorkoutCategory::where('gym_id', $gym->id)->findOrFail($id);
         $data = $request->validate(['name' => 'required|string|max:100', 'icon' => 'nullable|string|max:10']);
         $category->update($data);
         return redirect()->route('workout-categories.index')->with('success', 'Category updated.');
     }
 
-    public function destroy(string $id)
+    public function destroy($gym, string $id)
     {
-        $gymId = auth()->user()->gym_id;
-        WorkoutCategory::where('gym_id', $gymId)->findOrFail($id)->delete();
+        $category = WorkoutCategory::where('gym_id', $gym->id)->findOrFail($id);
+        $category->delete();
         return redirect()->route('workout-categories.index')->with('success', 'Category deleted.');
     }
 }

@@ -8,7 +8,7 @@
                         <p style="color:#6b7280; margin-top:4px;">Showing body stat photos for member ID {{ request('member_id') }}.</p>
                     @endif
                 </div>
-                <a href="{{ route('members.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">Back to Members</a>
+                <a href="{{ gym_route('gym.members.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">Back to Members</a>
             </div>
             <div class="gh-card-body">
                 @if($photos->count())

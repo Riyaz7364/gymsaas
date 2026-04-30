@@ -3,8 +3,7 @@ use App\Models\Invoice;
 if (!function_exists('gym_route')) {
     function gym_route($name, $params = [])
     {
-        $gym = request()->route('gym');
-
+        $gym = auth()->user()->gym;
         // ✅ normalize to array
         if (!is_array($params)) {
             $params = [$params];
