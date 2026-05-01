@@ -3,7 +3,8 @@
     <x-slot:header>Edit Trainer</x-slot:header>
     <x-slot:topbarTitle>Trainers</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ gym_route('gym.trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / {{ $trainer->name }}
+        Home / <a href="{{ gym_route('gym.trainers.index') }}"
+            style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / {{ $trainer->name }}
     </x-slot:breadcrumb>
 
     <div style="display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start; max-width:1000px;">
@@ -15,35 +16,40 @@
             </div>
             <div class="gh-card-body">
 
-                @if($errors->any())
-                <div class="gh-alert gh-alert-danger" style="margin-bottom:16px;">{{ $errors->first() }}</div>
+                @if ($errors->any())
+                    <div class="gh-alert gh-alert-danger" style="margin-bottom:16px;">{{ $errors->first() }}</div>
                 @endif
-                @if(session('success'))
-                <div class="gh-alert gh-alert-success" style="margin-bottom:16px;">{{ session('success') }}</div>
+                @if (session('success'))
+                    <div class="gh-alert gh-alert-success" style="margin-bottom:16px;">{{ session('success') }}</div>
                 @endif
 
-                <form method="POST" action="{{ gym_route('gym.trainers.update', [$trainer]) }}" enctype="multipart/form-data" id="trainerForm">
+                <form method="POST" action="{{ gym_route('gym.trainers.update', [$trainer]) }}"
+                    enctype="multipart/form-data" id="trainerForm">
                     @csrf @method('PUT')
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
                             <label class="gh-label">Full Name <span style="color:red;">*</span></label>
-                            <input type="text" name="name" class="gh-input" value="{{ old('name', $trainer->name) }}" required>
+                            <input type="text" name="name" class="gh-input"
+                                value="{{ old('name', $trainer->name) }}" required>
                         </div>
                         <div class="gh-form-group">
                             <label class="gh-label">Phone <span style="color:red;">*</span></label>
-                            <input type="text" name="phone" class="gh-input" value="{{ old('phone', $trainer->phone) }}" required>
+                            <input type="text" name="phone" class="gh-input"
+                                value="{{ old('phone', $trainer->phone) }}" required>
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
                             <label class="gh-label">Username <span style="color:red;">*</span></label>
-                            <input type="text" name="username" class="gh-input" value="{{ old('username', $trainer->username) }}" required>
+                            <input type="text" name="username" class="gh-input"
+                                value="{{ old('username', $trainer->username) }}" required>
                         </div>
                         <div class="gh-form-group">
                             <label class="gh-label">Email</label>
-                            <input type="email" name="email" class="gh-input" value="{{ old('email', $trainer->email) }}">
+                            <input type="email" name="email" class="gh-input"
+                                value="{{ old('email', $trainer->email) }}">
                         </div>
                     </div>
 
@@ -61,24 +67,31 @@
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
                             <label class="gh-label">Experience (years)</label>
-                            <input type="number" name="experience_years" class="gh-input" min="0" value="{{ old('experience_years', $trainer->experience_years) }}">
+                            <input type="number" name="experience_years" class="gh-input" min="0"
+                                value="{{ old('experience_years', $trainer->experience_years) }}">
                         </div>
                         <div class="gh-form-group">
                             <label class="gh-label">Salary ({{ auth()->user()->gym?->currency ?? '₹' }})</label>
-                            <input type="number" name="salary" class="gh-input" min="0" step="0.01" value="{{ old('salary', $trainer->salary) }}">
+                            <input type="number" name="salary" class="gh-input" min="0" step="0.01"
+                                value="{{ old('salary', $trainer->salary) }}">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="gh-form-group">
                             <label class="gh-label">Joined Date</label>
-                            <input type="date" name="joined_at" class="gh-input" value="{{ old('joined_at', $trainer->joined_at?->format('Y-m-d')) }}">
+                            <input type="date" name="joined_at" class="gh-input"
+                                value="{{ old('joined_at', $trainer->joined_at?->format('Y-m-d')) }}">
                         </div>
                         <div class="gh-form-group">
                             <label class="gh-label">Status</label>
                             <select name="status" class="gh-input">
-                                <option value="active" {{ old('status', $trainer->status) === 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ old('status', $trainer->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="active"
+                                    {{ old('status', $trainer->status) === 'active' ? 'selected' : '' }}>Active
+                                </option>
+                                <option value="inactive"
+                                    {{ old('status', $trainer->status) === 'inactive' ? 'selected' : '' }}>Inactive
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -90,7 +103,19 @@
 
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <button type="submit" class="gh-btn gh-btn-primary">Save Changes</button>
-               
+                        <button type="button"
+                            onclick="Livewire.dispatch('open-delete-dialog', {{ json_encode([
+                                'title' => 'Remove Trainer',
+                                'message' => 'Are you sure you want to remove this trainer? This action cannot be undone.',
+                                'itemName' => $trainer->name,
+                                'confirmText' => 'Remove',
+                                'cancelText' => 'Cancel',
+                                'formAction' => gym_route('gym.trainers.destroy', [$trainer]),
+                            ]) }})"
+                            class="gh-btn gh-btn-sm"
+                            style="font-size:12px; background:#fee2e2; color:#dc2626; border:none; cursor:pointer; border-radius:6px;">
+                            Delete
+                        </button>
                     </div>
                 </form>
             </div>
@@ -98,33 +123,39 @@
 
         {{-- Avatar --}}
         <div class="gh-card">
-            <div class="gh-card-header"><h3 class="gh-card-title">Profile Photo</h3></div>
-            <div class="gh-card-body justify-items-center" style="text-align:center;" x-data="avatarPreview('{{ $trainer->avatar ? asset('storage/'.$trainer->avatar) : '' }}')">
+            <div class="gh-card-header">
+                <h3 class="gh-card-title">Profile Photo</h3>
+            </div>
+            <div class="gh-card-body justify-items-center" style="text-align:center;" x-data="avatarPreview('{{ $trainer->avatar ? asset('storage/' . $trainer->avatar) : '' }}')">
                 <label for="avatarInput" style="cursor:pointer; display:block;">
-                    <img :src="preview || '{{ $trainer->avatar ? asset('storage/'.$trainer->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($trainer->name).'&color=fff&background=0abf8e&size=100&bold=true' }}'"
-                         style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; margin-bottom:12px;">
+                    <img :src="preview ||
+                        '{{ $trainer->avatar ? asset('storage/' . $trainer->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($trainer->name) . '&color=fff&background=0abf8e&size=100&bold=true' }}'"
+                        style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb; margin-bottom:12px;">
                 </label>
                 <div style="font-size:12px; color:#9ca3af; margin-bottom:12px;">Click to change photo</div>
-                <input type="file" id="avatarInput" name="avatar" form="trainerForm"
-                       accept="image/*" class="gh-input" @change="onFileChange" style="font-size:12px;">
+                <input type="file" id="avatarInput" name="avatar" form="trainerForm" accept="image/*"
+                    class="gh-input" @change="onFileChange" style="font-size:12px;">
                 <div style="margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
-                    <div style="font-size:13px; color:#6b7280; margin-bottom:4px;"><strong>{{ $trainer->members_count }}</strong> assigned members</div>
+                    <div style="font-size:13px; color:#6b7280; margin-bottom:4px;">
+                        <strong>{{ $trainer->members_count }}</strong> assigned members</div>
                 </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
-    <script>
-    function avatarPreview(existing) {
-        return {
-            preview: existing || null,
-            onFileChange(e) {
-                const file = e.target.files[0];
-                if (file) this.preview = URL.createObjectURL(file);
+        <script>
+            function avatarPreview(existing) {
+                return {
+                    preview: existing || null,
+                    onFileChange(e) {
+                        const file = e.target.files[0];
+                        if (file) this.preview = URL.createObjectURL(file);
+                    }
+                };
             }
-        };
-    }
-    </script>
+        </script>
     @endpush
+    @livewire('delete-dialog')
+
 </x-layouts.app>

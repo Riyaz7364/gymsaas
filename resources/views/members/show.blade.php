@@ -27,16 +27,16 @@
         $daysLeft  = $ap ? max(0, (int) ceil(now()->diffInDays($ap->end_date, false))) : 0;
     @endphp
 
-    <div style="display:grid; grid-template-columns:320px 1fr; gap:20px; align-items:start;">
+    <div class="show-shell">
 
         {{-- LEFT: Profile card --}}
-        <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="profile-column">
 
             {{-- Main profile --}}
             <div class="gh-card">
                 <div class="gh-card-body" style="text-align:center; padding:28px 20px 20px;">
                     <img src="{{ $member->avatar ? asset('storage/'.$member->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($member->name).'&color=fff&background=0abf8e&size=96&bold=true' }}"
-                         style="width:88px; height:88px; border-radius:50%; object-fit:cover; border:3px solid var(--gh-border); margin-bottom:12px;" alt="">
+                         style="width:88px; height:88px; border-radius:50%; object-fit:cover; border:3px solid var(--gh-border); margin-bottom:12px; justify-self:center;" alt="member pfofile photo">
                     <h2 style="font-size:18px; font-weight:700; margin:0 0 2px;">{{ $member->name }}</h2>
                     <p style="font-size:12px; color:#9ca3af; margin:0 0 10px;">{{ $member->member_no }}</p>
 
@@ -121,7 +121,7 @@
             @endif
 
             {{-- WhatsApp AI opt-in --}}
-            @if(auth()->user()->gymHasModule('whatsapp_updates'))
+            @if(auth()->user()->gymHasModule('whatsapp'))
             <div class="gh-card">
                 <div class="gh-card-body" style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:22px;">💬</span>
@@ -137,16 +137,20 @@
             @endif
         </div>
 
+
         {{-- RIGHT: Tabs --}}
-        <div x-data="{ tab: 'plan' }">
+        <div class="showtabs" x-data="{ tab: 'plan' }">
 
             {{-- Tab nav --}}
-            <div style="display:flex; gap:2px; margin-bottom:16px; border-bottom:2px solid var(--gh-border); padding-bottom:0; flex-wrap:wrap;">
+            <div class="tab-actions" role="tablist" aria-label="Trainer sections">
            
                 @foreach(auth()->user()->membersTabs() as $key => $info)
-                <button @click="tab = '{{ $key }}'"
-                        :style="tab === '{{ $key }}' ? 'border-bottom:2px solid var(--gh-primary); color:var(--gh-primary); margin-bottom:-2px;' : ''"
-                        class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded m-1">
+                        <button type="button"
+                        role="tab"
+                        @click="tab = '{{ $key }}'"
+                        :aria-selected="tab === '{{ $key }}'"
+                        :class="{ 'is-active': tab === '{{ $key }}' }"
+                        class="tab-button">
                     <span>{{ $info['icon'] }}</span> {{ $info['label'] }}
                 </button>
                 @endforeach

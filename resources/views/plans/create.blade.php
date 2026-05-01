@@ -3,14 +3,14 @@
     <x-slot:header>Create Membership Plan</x-slot:header>
     <x-slot:topbarTitle>Plans</x-slot:topbarTitle>
     <x-slot:breadcrumb>
-        Home / <a href="{{ route('plans.index') }}" style="color:var(--gh-primary);text-decoration:none;">Plans</a> / Create
+        Home / <a href="{{ gym_route('gym.plans.index') }}" style="color:var(--gh-primary);text-decoration:none;">Plans</a> / Create
     </x-slot:breadcrumb>
 
     <div style="max-width:640px;">
         <div class="gh-card">
             <div class="gh-card-header">
                 <h3 class="gh-card-title">New Plan</h3>
-                <a href="{{ route('plans.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
+                <a href="{{ gym_route('gym.plans.index') }}" class="gh-btn gh-btn-outline gh-btn-sm">← Back</a>
             </div>
             <div class="gh-card-body">
 
@@ -18,7 +18,7 @@
                 <div class="gh-alert gh-alert-danger" style="margin-bottom:16px;">{{ $errors->first() }}</div>
                 @endif
 
-                <form method="POST" action="{{ route('plans.store') }}">
+                <form method="POST" action="{{ gym_route('gym.plans.store') }}">
                     @csrf
 
                     <div class="gh-form-group">
@@ -88,7 +88,7 @@
 
                     <div style="display:flex; gap:10px;">
                         <button type="submit" class="gh-btn gh-btn-primary">Create Plan</button>
-                        <a href="{{ route('plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                        <a href="{{ gym_route('gym.plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                     </div>
                 </form>
             </div>

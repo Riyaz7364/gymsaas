@@ -2,49 +2,74 @@
     <x-slot:title>New Diet Plan — {{ config('app.name') }}</x-slot:title>
     <x-slot:header>New Diet Plan</x-slot:header>
     <x-slot:topbarTitle>Diet & Nutrition</x-slot:topbarTitle>
-    <x-slot:breadcrumb>Home / <a href="{{ route('diet-plans.index') }}" style="color:var(--gh-primary);text-decoration:none;">Diet Plans</a> / Create</x-slot:breadcrumb>
+    <x-slot:breadcrumb>Home / <a href="{{ gym_route('gym.diet-plans.index') }}"
+            style="color:var(--gh-primary);text-decoration:none;">Diet Plans</a> / Create</x-slot:breadcrumb>
 
     <div style="max-width:800px;">
         <div class="gh-card">
-            <div class="gh-card-header"><h3 class="gh-card-title">Create New Diet Plan</h3></div>
+            <div class="gh-card-header">
+                <h3 class="gh-card-title">Create New Diet Plan</h3>
+            </div>
             <div class="gh-card-body">
-                @if($errors->any())
-                <div class="gh-alert gh-alert-danger"><ul style="margin:0;padding-left:18px;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul></div>
+                @if ($errors->any())
+                    <div class="gh-alert gh-alert-danger">
+                        <ul style="margin:0;padding-left:18px;">
+                            @foreach ($errors->all() as $e)
+                                <li>{{ $e }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
-                <form method="POST" action="{{ route('diet-plans.store') }}">
+                <form method="POST" action="{{ gym_route('gym.diet-plans.store') }}">
                     @csrf
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                         <div style="grid-column:1/-1;">
                             <label class="gh-label">Plan Name <span style="color:#ef4444;">*</span></label>
-                            <input type="text" name="name" class="gh-input" value="{{ old('name') }}" placeholder="e.g., High Protein Bulk, Weight Loss 30 Days" required>
-                            @error('name')<div style="color:#ef4444;font-size:13px;">{{ $message }}</div>@enderror
+                            <input type="text" name="name" class="gh-input" value="{{ old('name') }}"
+                                placeholder="e.g., High Protein Bulk, Weight Loss 30 Days" required>
+                            @error('name')
+                                <div style="color:#ef4444;font-size:13px;">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="gh-label">Goal <span style="color:#ef4444;">*</span></label>
                             <select name="goal" class="gh-input" required>
                                 <option value="">— Select goal —</option>
-                                @foreach(['weight_loss' => '🔥 Weight Loss', 'muscle_gain' => '💪 Muscle Gain', 'maintain' => '⚖️ Maintain', 'endurance' => '🏃 Endurance'] as $val => $label)
-                                <option value="{{ $val }}" {{ old('goal') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @foreach (['weight_loss' => '🔥 Weight Loss', 'muscle_gain' => '💪 Muscle Gain', 'maintain' => '⚖️ Maintain', 'endurance' => '🏃 Endurance'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('goal') === $val ? 'selected' : '' }}>
+                                        {{ $label }}</option>
                                 @endforeach
                             </select>
-                            @error('goal')<div style="color:#ef4444;font-size:13px;">{{ $message }}</div>@enderror
+                            @error('goal')
+                                <div style="color:#ef4444;font-size:13px;">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="gh-label">For Member (optional)</label>
                             <select name="member_id" class="gh-input">
                                 <option value="">— No specific member —</option>
-                                @foreach($members as $m)<option value="{{ $m->id }}" {{ old('member_id')==$m->id?'selected':'' }}>{{ $m->name }}</option>@endforeach
+                                @foreach ($members as $m)
+                                    <option value="{{ $m->id }}"
+                                        {{ old('member_id') == $m->id ? 'selected' : '' }}>
+                                        {{ $m->name }}</option>
+                                @endforeach
                             </select>
-                            @error('member_id')<div style="color:#ef4444;font-size:13px;">{{ $message }}</div>@enderror
+                            @error('member_id')
+                                <div style="color:#ef4444;font-size:13px;">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div style="grid-column:1/-1;">
                             <label class="gh-label">Description</label>
                             <textarea name="description" class="gh-input" rows="3" placeholder="Add details about this plan...">{{ old('description') }}</textarea>
-                            @error('description')<div style="color:#ef4444;font-size:13px;">{{ $message }}</div>@enderror
+                            @error('description')
+                                <div style="color:#ef4444;font-size:13px;">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div style="grid-column:1/-1;background:#f9fafb;padding:12px;border-radius:6px;border-left:3px solid #3b82f6;">
+                        <div
+                            style="grid-column:1/-1;background:#f9fafb;padding:12px;border-radius:6px;border-left:3px solid #3b82f6;">
                             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
-                                <input type="checkbox" name="is_default" value="1" {{ old('is_default') ? 'checked' : '' }}>
+                                <input type="checkbox" name="is_default" value="1"
+                                    {{ old('is_default') ? 'checked' : '' }}>
                                 <span style="font-weight:600;color:#374151;">Save as Template</span>
                             </label>
                             <p style="margin:8px 0 0;padding-left:24px;color:#6b7280;font-size:13px;">
@@ -57,24 +82,34 @@
                     {{-- Meals Section --}}
                     <div style="margin-top:24px;border-top:1px solid #e5e7eb;padding-top:24px;">
                         <h4 style="margin:0 0 16px;font-size:16px;font-weight:600;">🍽️ Meals & Nutrition</h4>
-                        <p style="margin:0 0 20px;color:#6b7280;font-size:14px;">Add meals to this diet plan by selecting from your <a href="{{ route('food-items.index') }}" style="color:var(--gh-primary);" target="_blank">Food & Drinks library</a> or enter manually.</p>
+                        <p style="margin:0 0 20px;color:#6b7280;font-size:14px;">Add meals to this diet plan by
+                            selecting from your <a href="{{ gym_route('gym.food-items.index') }}"
+                                style="color:var(--gh-primary);" target="_blank">Food & Drinks library</a> or enter
+                            manually.</p>
 
                         <div id="meals-container">
                             {{-- Default empty meal --}}
-                            <div class="meal-item" style="border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:16px;background:#fafafa;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <div class="meal-item"
+                                style="border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:16px;background:#fafafa;">
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                                     <h5 style="margin:0;font-size:14px;font-weight:600;">Meal #1</h5>
-                                    <button type="button" class="remove-meal-btn gh-btn gh-btn-sm" style="background:#fee2e2;color:#dc2626;border:none;display:none;" onclick="this.parentElement.parentElement.remove(); updateMealNumbers();">Remove Meal</button>
+                                    <button type="button" class="remove-meal-btn gh-btn gh-btn-sm"
+                                        style="background:#fee2e2;color:#dc2626;border:none;display:none;"
+                                        onclick="this.parentElement.parentElement.remove(); updateMealNumbers();">Remove
+                                        Meal</button>
                                 </div>
 
                                 <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;">
                                     <div>
                                         <label class="gh-label">Meal Name <span style="color:#ef4444;">*</span></label>
-                                        <input type="text" name="meals[0][name]" class="gh-input" placeholder="e.g., Breakfast, Lunch, Dinner" required>
+                                        <input type="text" name="meals[0][name]" class="gh-input"
+                                            placeholder="e.g., Breakfast, Lunch, Dinner" required>
                                     </div>
                                     <div>
                                         <label class="gh-label">Time</label>
-                                        <input type="text" name="meals[0][time]" class="gh-input" placeholder="8:00 AM">
+                                        <input type="text" name="meals[0][time]" class="gh-input"
+                                            placeholder="8:00 AM">
                                     </div>
                                 </div>
 
@@ -84,43 +119,56 @@
                                     <div class="food-items-list" id="food-items-0">
                                         {{-- Food item row will be added here --}}
                                     </div>
-                                    <button type="button" class="add-food-item-btn gh-btn gh-btn-sm gh-btn-outline" style="margin-top:8px;" onclick="addFoodItem(0)">
+                                    <button type="button" class="add-food-item-btn gh-btn gh-btn-sm gh-btn-outline"
+                                        style="margin-top:8px;" onclick="addFoodItem(0)">
                                         + Add Food Item
                                     </button>
                                 </div>
 
                                 {{-- Manual Entry Option --}}
                                 <div style="margin-bottom:16px;">
-                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
-                                        <input type="checkbox" class="manual-entry-toggle" data-meal="0" onchange="toggleManualEntry(0)">
+                                    <label
+                                        style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+                                        <input type="checkbox" class="manual-entry-toggle" data-meal="0"
+                                            onchange="toggleManualEntry(0)">
                                         <span style="font-weight:500;">Or enter nutrition manually</span>
                                     </label>
                                     <div class="manual-entry" id="manual-entry-0" style="display:none;">
                                         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
                                             <div>
                                                 <label class="gh-label">Calories</label>
-                                                <input type="number" name="meals[0][total_calories]" class="gh-input manual-calories" placeholder="0" min="0">
+                                                <input type="number" name="meals[0][total_calories]"
+                                                    class="gh-input manual-calories" placeholder="0" min="0">
                                             </div>
                                             <div>
                                                 <label class="gh-label">Protein (g)</label>
-                                                <input type="number" name="meals[0][protein_g]" class="gh-input manual-protein" placeholder="0.00" min="0" step="0.01">
+                                                <input type="number" name="meals[0][protein_g]"
+                                                    class="gh-input manual-protein" placeholder="0.00" min="0"
+                                                    step="0.01">
                                             </div>
                                             <div>
                                                 <label class="gh-label">Carbs (g)</label>
-                                                <input type="number" name="meals[0][carbs_g]" class="gh-input manual-carbs" placeholder="0.00" min="0" step="0.01">
+                                                <input type="number" name="meals[0][carbs_g]"
+                                                    class="gh-input manual-carbs" placeholder="0.00" min="0"
+                                                    step="0.01">
                                             </div>
                                             <div>
                                                 <label class="gh-label">Fat (g)</label>
-                                                <input type="number" name="meals[0][fat_g]" class="gh-input manual-fat" placeholder="0.00" min="0" step="0.01">
+                                                <input type="number" name="meals[0][fat_g]"
+                                                    class="gh-input manual-fat" placeholder="0.00" min="0"
+                                                    step="0.01">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Nutritional Summary --}}
-                                <div class="nutrition-summary" style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:6px;padding:12px;">
-                                    <h6 style="margin:0 0 8px;font-size:13px;font-weight:600;color:#0ea5e9;">📊 Nutritional Summary</h6>
-                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;font-size:13px;">
+                                <div class="nutrition-summary"
+                                    style="background:#f0f9ff;border:1px solid #0ea5e9;border-radius:6px;padding:12px;">
+                                    <h6 style="margin:0 0 8px;font-size:13px;font-weight:600;color:#0ea5e9;">📊
+                                        Nutritional Summary</h6>
+                                    <div
+                                        style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;font-size:13px;">
                                         <div><strong>Calories:</strong> <span id="total-calories-0">0</span></div>
                                         <div><strong>Protein:</strong> <span id="total-protein-0">0.00</span>g</div>
                                         <div><strong>Carbs:</strong> <span id="total-carbs-0">0.00</span>g</div>
@@ -129,21 +177,26 @@
                                 </div>
 
                                 {{-- Hidden inputs for totals --}}
-                                <input type="hidden" name="meals[0][calculated_calories]" id="hidden-calories-0" value="0">
-                                <input type="hidden" name="meals[0][calculated_protein]" id="hidden-protein-0" value="0">
-                                <input type="hidden" name="meals[0][calculated_carbs]" id="hidden-carbs-0" value="0">
-                                <input type="hidden" name="meals[0][calculated_fat]" id="hidden-fat-0" value="0">
+                                <input type="hidden" name="meals[0][calculated_calories]" id="hidden-calories-0"
+                                    value="0">
+                                <input type="hidden" name="meals[0][calculated_protein]" id="hidden-protein-0"
+                                    value="0">
+                                <input type="hidden" name="meals[0][calculated_carbs]" id="hidden-carbs-0"
+                                    value="0">
+                                <input type="hidden" name="meals[0][calculated_fat]" id="hidden-fat-0"
+                                    value="0">
                             </div>
                         </div>
 
-                        <button type="button" id="add-meal-btn" class="gh-btn gh-btn-outline" style="margin-bottom:24px;">
+                        <button type="button" id="add-meal-btn" class="gh-btn gh-btn-outline"
+                            style="margin-bottom:24px;">
                             + Add Another Meal
                         </button>
                     </div>
 
                     <div style="margin-top:24px;display:flex;gap:10px;">
                         <button type="submit" class="gh-btn gh-btn-primary">Create Diet Plan</button>
-                        <a href="{{ route('diet-plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
+                        <a href="{{ gym_route('gym.diet-plans.index') }}" class="gh-btn gh-btn-outline">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -173,7 +226,7 @@
                         <label class="gh-label">Food Item</label>
                         <select name="meals[${mealId}][food_items][${itemIndex}][food_item_id]" class="gh-input food-item-select" onchange="updateFoodItemData(${mealId}, ${itemIndex})" required>
                             <option value="">— Select food item —</option>
-                            @foreach($foodItems as $foodItem)
+                            @foreach ($foodItems as $foodItem)
                             <option value="{{ $foodItem->id }}" data-calories="{{ $foodItem->calories }}" data-protein="{{ $foodItem->protein_g }}" data-carbs="{{ $foodItem->carbs_g }}" data-fat="{{ $foodItem->fat_g }}" data-serving="{{ $foodItem->serving_size }} {{ $foodItem->serving_unit }}">{{ $foodItem->name }} ({{ $foodItem->category->name ?? 'Uncategorized' }})</option>
                             @endforeach
                         </select>
@@ -198,7 +251,8 @@
 
         // Update food item data when selection changes
         function updateFoodItemData(mealId, itemIndex) {
-            const select = document.querySelector(`select[name="meals[${mealId}][food_items][${itemIndex}][food_item_id]"]`);
+            const select = document.querySelector(
+                `select[name="meals[${mealId}][food_items][${itemIndex}][food_item_id]"]`);
             const selectedOption = select.options[select.selectedIndex];
             const servingDisplay = select.closest('.food-item-row').querySelector('.serving-size-display');
 

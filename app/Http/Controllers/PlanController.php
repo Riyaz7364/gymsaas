@@ -59,7 +59,7 @@ class PlanController extends Controller
         return redirect(gym_route('gym.plans.edit', [$gym, $plan]));
     }
 
-    public function edit(Plan $plan)
+    public function edit($gym, Plan $plan)
     {
         abort_if($plan->gym_id !== auth()->user()->gym_id, 403);
         return view('plans.edit', compact('plan'));
@@ -88,7 +88,7 @@ class PlanController extends Controller
         return redirect(gym_route('gym.plans.index'))->with('success', "Plan \"{$plan->name}\" updated.");
     }
 
-    public function destroy(Plan $plan)
+    public function destroy($gym, Plan $plan)
     {
         abort_if($plan->gym_id !== auth()->user()->gym_id, 403);
 

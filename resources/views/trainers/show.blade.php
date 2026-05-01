@@ -6,178 +6,7 @@
         Home / <a href="{{ gym_route('gym.trainers.index') }}" style="color:var(--gh-primary);text-decoration:none;">Trainers</a> / {{ $trainer->name }}
     </x-slot:breadcrumb>
 
-    @push('styles')
-    <style>
-        .trainer-show-shell {
-            display: grid;
-            grid-template-columns: 290px minmax(0, 1fr);
-            gap: 20px;
-            align-items: start;
-        }
-
-        .trainer-profile-column {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .trainer-tabs {
-            min-width: 0;
-        }
-
-        .trainer-tab-actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            padding: 6px;
-            background: #fff;
-            border: 1px solid var(--gh-border);
-            border-radius: 10px;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .trainer-tab-actions::-webkit-scrollbar {
-            display: none;
-        }
-
-        .trainer-tab-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            min-height: 38px;
-            padding: 8px 14px;
-            border: 1px solid transparent;
-            border-radius: 8px;
-            background: transparent;
-            color: #64748b;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1;
-            white-space: nowrap;
-            transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
-        }
-
-        .trainer-tab-button:hover {
-            background: #f8fafc;
-            color: #0f172a;
-        }
-
-        .trainer-tab-button.is-active {
-            background: var(--gh-primary);
-            border-color: var(--gh-primary);
-            color: #fff;
-            box-shadow: 0 8px 18px rgba(10, 191, 142, .22);
-        }
-
-        .trainer-tab-button svg {
-            width: 16px;
-            height: 16px;
-            flex: 0 0 auto;
-        }
-
-        .trainer-slot-form-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-
-        .trainer-slot-row,
-        .trainer-member-row,
-        .trainer-payment-row {
-            min-width: 0;
-        }
-
-        @media (max-width: 1180px) {
-            .trainer-show-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .trainer-profile-column {
-                display: grid;
-                grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
-                align-items: start;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .trainer-show-shell {
-                gap: 14px;
-            }
-
-            .trainer-profile-column,
-            .trainer-slot-form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .trainer-tab-button {
-                flex: 1 0 auto;
-                min-width: 112px;
-                padding: 9px 12px;
-            }
-
-            .trainer-slot-row {
-                align-items: flex-start !important;
-                flex-direction: column;
-                gap: 12px !important;
-            }
-
-            .trainer-slot-row > form,
-            .trainer-slot-row > form button {
-                width: 100%;
-            }
-
-            .trainer-slot-row > form button {
-                padding: 8px 10px !important;
-            }
-
-            .trainer-member-row,
-            .trainer-payment-row {
-                align-items: flex-start !important;
-                flex-wrap: wrap;
-            }
-
-            .trainer-member-progress {
-                padding-left: 0 !important;
-            }
-
-            .trainer-payment-row > div:last-child {
-                width: 100%;
-                text-align: left !important;
-                padding-left: 60px;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .gh-content {
-                padding: 16px;
-            }
-
-            .gh-page-header {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .trainer-tab-button {
-                min-width: calc(50vw - 32px);
-            }
-
-            .trainer-slot-form-grid > div,
-            .trainer-slot-form-grid > div[style*="grid-column"] {
-                grid-column: auto !important;
-            }
-
-            .trainer-payment-row > div:last-child {
-                padding-left: 0;
-            }
-        }
-    </style>
-    @endpush
+ 
 
     @if(session('success'))
     <div class="gh-alert gh-alert-success" style="margin-bottom:16px;">{{ session('success') }}</div>
@@ -200,10 +29,10 @@
         }
     @endphp
 
-    <div class="trainer-show-shell">
+    <div class="show-shell">
 
         {{-- LEFT sidebar --}}
-        <div class="trainer-profile-column">
+        <div class="profile-column">
 
             {{-- Profile card --}}
             <div class="gh-card">
@@ -266,10 +95,10 @@
         </div>
 
         {{-- RIGHT: Tabs --}}
-        <div class="trainer-tabs" x-data="{ tab: 'schedule' }">
+        <div class="showtabs" x-data="{ tab: 'schedule' }">
 
             {{-- Tab nav --}}
-            <div class="trainer-tab-actions" role="tablist" aria-label="Trainer sections">
+            <div class="tab-actions" role="tablist" aria-label="Trainer sections">
                 @php
                     $tabs = [
                         'schedule' => ['label' => 'Schedule'],
@@ -283,7 +112,7 @@
                         @click="tab = '{{ $key }}'"
                         :aria-selected="tab === '{{ $key }}'"
                         :class="{ 'is-active': tab === '{{ $key }}' }"
-                        class="trainer-tab-button">
+                        class="tab-button">
                     @if($key === 'schedule')
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M5 11h14M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
                     @elseif($key === 'members')
@@ -314,7 +143,7 @@
                             @php $slotCount = $slot->members->count(); @endphp
                             <div class="gh-card" style="margin:0;">
                                 <div class="gh-card-body" style="padding:14px 18px;">
-                                    <div class="trainer-slot-row" style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                                    <div class="slot-row" style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
 
                                         {{-- Time block --}}
                                         <div style="background:{{ $slotCount >= $slot->max_members && $slot->max_members === 1 ? '#fef2f2' : ($slotCount >= $slot->max_members ? '#fff7ed' : '#f0fdf9') }};
@@ -402,7 +231,7 @@
                     <div class="gh-card-body">
                         <form id="trainer-slot-create-form" method="POST" action="{{ gym_route('gym.trainers.schedule.store', [$gym, $trainer]) }}">
                             @csrf
-                            <div class="trainer-slot-form-grid">
+                            <div class="slot-form-grid">
                                 <div style="grid-column:1/-1;">
                                     <label class="gh-label">Slot Title <span style="color:#ef4444;">*</span></label>
                                     <input type="text" name="title" class="gh-input" value="{{ old('title') }}"
@@ -472,7 +301,7 @@
                             $statusMap = ['active'=>'gh-badge-success','frozen'=>'gh-badge-info','expired'=>'gh-badge-danger','inactive'=>'gh-badge-muted'];
                         @endphp
                         <div style="padding:14px 18px; border-bottom:1px solid var(--gh-border);">
-                            <div class="trainer-member-row" style="display:flex; align-items:center; gap:14px;">
+                            <div class="member-row" style="display:flex; align-items:center; gap:14px;">
                                 <img src="{{ $m->avatar ? asset('storage/'.$m->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($m->name).'&color=fff&background=0abf8e&size=44&bold=true' }}"
                                      style="width:46px; height:46px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--gh-border);" alt="">
                                 <div style="flex:1; min-width:0;">
@@ -534,7 +363,7 @@
                     </div>
                     <div class="gh-card-body" style="padding:0;">
                         @forelse($payments as $pay)
-                        <div class="trainer-payment-row" style="display:flex; align-items:center; gap:14px; padding:13px 18px; border-bottom:1px solid var(--gh-border);">
+                        <div class="payment-row" style="display:flex; align-items:center; gap:14px; padding:13px 18px; border-bottom:1px solid var(--gh-border);">
                             <div style="flex:1; min-width:0;">
                                 <div style="font-size:13px; font-weight:600; color:#111827;">{{ $pay->member->name }}</div>
                                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:3px;">

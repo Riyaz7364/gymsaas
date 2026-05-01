@@ -187,17 +187,16 @@ class MemberController extends Controller
         return view('members.show', compact('member', 'attendanceCount', 'allTrainers', 'allDietPlans', 'allTrainerSchedules', 'gym'));
     }
 
-    public function edit(Member $member)
+    public function edit($gym, Member $member)
     {
         $this->authorizeGym($member);
-        $gymId   = auth()->user()->gym_id;
-        $plans   = Plan::where('gym_id', $gymId)->where('is_active', true)->get();
-        $trainers = Trainer::where('gym_id', $gymId)->where('status', 'active')->get();
-        $workoutPlans = WorkoutSequence::where('gym_id', $gymId)->where('is_active', true)->get();
-        return view('members.edit', compact('member', 'plans', 'trainers', 'workoutPlans'));
+        $plans   = Plan::where('gym_id', $gym->id)->where('is_active', true)->get();
+        $trainers = Trainer::where('gym_id', $gym->id)->where('status', 'active')->get();
+        $workoutPlans = WorkoutSequence::where('gym_id', $gym->id)->where('is_active', true)->get();
+        return view('members.edit', compact('member', 'plans', 'trainers', 'workoutPlans', 'gym'));
     }
 
-    public function update(Request $request, Member $member)
+    public function update(Request $request, $gym,  Member $member)
     {
         $this->authorizeGym($member);
 
@@ -219,6 +218,7 @@ class MemberController extends Controller
             'whatsapp_optin'          => 'boolean',
             'avatar'                  => 'nullable|image|max:2048',
             'workout_plan_id'         => 'nullable|exists:workout_sequences,id',
+            'password'                => 'nullable|string|min:8',
         ]);
 
         $avatarPath = $member->avatar;
@@ -227,7 +227,17 @@ class MemberController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars/members', 'public');
         }
 
-        $member->update(array_merge($validated, ['avatar' => $avatarPath, 'whatsapp_optin' => $request->boolean('whatsapp_optin')]));
+    if(!empty($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $member->update(
+            array_merge($validated, 
+            ['avatar' => $avatarPath, 'whatsapp_optin' => $request->boolean('whatsapp_optin')
+            ]
+        ));
 
         // Handle workout plan change
         if (isset($validated['workout_plan_id']) && (!$member->workoutPlan || $member->workoutPlan->id != $validated['workout_plan_id'])) {
